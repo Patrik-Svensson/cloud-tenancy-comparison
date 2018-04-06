@@ -23,7 +23,7 @@ namespace MigrateDatabase
 
 			var host = new JobHost(config);
 			// The following code ensures that the WebJob will be running continuously
-			host.Call(typeof(Functions).GetMethod(nameof(Functions.Migrate));
+			host.Call(typeof(Functions).GetMethod(nameof(Functions.Migrate)));
 		}
 	}
 }
