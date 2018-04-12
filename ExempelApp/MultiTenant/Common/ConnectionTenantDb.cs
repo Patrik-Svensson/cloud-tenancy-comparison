@@ -5,11 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Data.SqlClient;
 
 namespace Common
 {
     public class ConnectionTenantDb
     {
+        // ConnectionString till Catalog
+        private static SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=Catalog;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30");
+
         public static string GetConnectionString()
         {
             string tenantId;
@@ -38,15 +42,24 @@ namespace Common
 
         public static string GetConnectionStringForTenant(string tenantId)
         {
-            string connectionString = null;
-            if (tenantId.Equals("1"))
-                connectionString = "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=Exjobb1;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=10;";
-            else if (tenantId.Equals("2"))
-                connectionString = "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=Exjobb2;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-            else
-                throw new ArgumentException("No tenant with the Id of: " + tenantId);
+            string connectionStringTenant = null;
 
-            return connectionString;
+            try
+            {
+                catalogDbConnection.Open();
+                SqlCommand command = new SqlCommand("SELECT Connection FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
+                connectionStringTenant = (string)command.ExecuteScalar();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+            finally
+            {
+                catalogDbConnection.Close();
+            }
+
+            return connectionStringTenant;
         }
     }
 }
