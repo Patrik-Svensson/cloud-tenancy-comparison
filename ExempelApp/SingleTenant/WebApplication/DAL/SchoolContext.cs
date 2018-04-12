@@ -1,11 +1,31 @@
 ﻿using WebApplication.Models;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Web;
+using System.Diagnostics;
 
 namespace WebApplication.DAL
 {
     public class SchoolContext : DbContext
     {
+        public SchoolContext()
+            : base(GetConnectionString()) // Tar connection strign från web.config
+        {
+            
+        }
+
+        private static string GetConnectionString()
+        {
+            // HttpContext.Current  är null när man kör migrations
+            if (HttpContext.Current != null)
+            {
+                var httpRequst = HttpContext.Current.Request;
+                Debug.WriteLine("Creating SchoolContext for request url {0}", httpRequst.RawUrl);
+            }
+
+            return "name=SchoolContext";
+        }
+
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
