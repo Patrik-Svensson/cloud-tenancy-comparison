@@ -3,19 +3,18 @@ using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Web;
 using System.Diagnostics;
+using System;
 
 namespace WebApplication.DAL
 {
     public class SchoolContext : DbContext
     {
-        public SchoolContext()
-            : this(GetConnectionString())
-        {
-
-        }
+        public SchoolContext() 
+            :this(GetConnectionString())
+        {}  
 
         public SchoolContext(string connectionString)
-            : base(connectionString) // Tar connection strign från web.config
+            : base(connectionString)
         {
 
         }

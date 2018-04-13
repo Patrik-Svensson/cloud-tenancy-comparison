@@ -16,7 +16,7 @@ namespace Common
 
         public static string GetConnectionString()
         {
-            string tenantId;
+            int tenantId;
             string connectionString = null;
 
             // HttpContext.Current är null när man kör migrations
@@ -24,7 +24,7 @@ namespace Common
             {
                 var httpRequst = HttpContext.Current.Request;
                 Debug.WriteLine("Creating SchoolContext for request url {0}", httpRequst.RawUrl);
-                tenantId = httpRequst.QueryString.Get("Id");
+                tenantId = Int32.Parse(httpRequst.QueryString.Get("Id"));
                 connectionString = GetConnectionStringForTenant(tenantId);
             }
             else
@@ -40,14 +40,14 @@ namespace Common
             return connectionString;
         }
 
-        public static string GetConnectionStringForTenant(string tenantId)
+        public static string GetConnectionStringForTenant(int tenantId)
         {
             string connectionStringTenant = null;
 
             try
             {
                 catalogDbConnection.Open();
-                SqlCommand command = new SqlCommand("SELECT Connection FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
+                SqlCommand command = new SqlCommand("SELECT Connection FROM TenantsMeta WHERE TenantID = " + tenantId.ToString() + ";", catalogDbConnection);
                 connectionStringTenant = (string)command.ExecuteScalar();
             }
             catch (Exception e)

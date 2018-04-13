@@ -15,11 +15,19 @@ namespace WebApplication.Controllers
 {
     public class InstructorController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private SchoolContext db; //= new SchoolContext();
 
         // GET: Instructor
         public ActionResult Index(int? id, int? courseID)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             var viewModel = new InstructorIndexData();
 
             viewModel.Instructors = db.Instructors
@@ -58,6 +66,15 @@ namespace WebApplication.Controllers
         // GET: Instructor/Details/5
         public ActionResult Details(int? id)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -82,6 +99,14 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "LastName,FirstMidName,HireDate,OfficeAssignment")]Instructor instructor, string[] selectedCourses)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             if (selectedCourses != null)
             {
                 instructor.Courses = new List<Course>();
@@ -105,6 +130,14 @@ namespace WebApplication.Controllers
         // GET: Instructor/Edit/5
         public ActionResult Edit(int? id)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -215,6 +248,14 @@ namespace WebApplication.Controllers
         // GET: Instructor/Delete/5
         public ActionResult Delete(int? id)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -232,6 +273,14 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             Instructor instructor = db.Instructors
               .Include(i => i.OfficeAssignment)
               .Where(i => i.ID == id)
@@ -251,13 +300,13 @@ namespace WebApplication.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
-        protected override void Dispose(bool disposing)
+        /*protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
+        }*/
     }
 }

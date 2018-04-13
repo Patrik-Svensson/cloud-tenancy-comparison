@@ -15,11 +15,19 @@ namespace WebApplication.Controllers
 {
     public class DepartmentController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private SchoolContext db; //= new SchoolContext();
 
         // GET: Department
         public async Task<ActionResult> Index()
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             var departments = db.Departments.Include(d => d.Administrator);
             return View(await departments.ToListAsync());
         }
@@ -27,6 +35,14 @@ namespace WebApplication.Controllers
         // GET: Department/Details/5
         public async Task<ActionResult> Details(int? id)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -49,6 +65,14 @@ namespace WebApplication.Controllers
         // GET: Department/Create
         public ActionResult Create()
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "FullName");
             return View();
         }
@@ -60,6 +84,14 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "DepartmentID,Name,Budget,StartDate,InstructorID")] Department department)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             if (ModelState.IsValid)
             {
                 db.Departments.Add(department);
@@ -74,6 +106,14 @@ namespace WebApplication.Controllers
         // GET: Department/Edit/5
         public async Task<ActionResult> Edit(int? id)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -94,6 +134,14 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int? id, byte[] rowVersion)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             string[] fieldsToBind = new string[] { "Name", "Budget", "StartDate", "InstructorID", "RowVersion" };
 
             if (id == null)
@@ -168,6 +216,14 @@ namespace WebApplication.Controllers
         // GET: Department/Delete/5
         public async Task<ActionResult> Delete(int? id, bool? concurrencyError)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -200,6 +256,14 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(Department department)
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
+
             try
             {
                 db.Entry(department).State = EntityState.Deleted;
@@ -219,13 +283,13 @@ namespace WebApplication.Controllers
         }
 
 
-        protected override void Dispose(bool disposing)
+        /*protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
+        }*/
     }
 }

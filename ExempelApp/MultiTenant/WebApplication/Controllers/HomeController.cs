@@ -11,7 +11,7 @@ namespace WebApplication.Controllers
 {
     public class HomeController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private SchoolContext db; //= new SchoolContext();
 
         public ActionResult Index()
         {
@@ -20,6 +20,13 @@ namespace WebApplication.Controllers
 
         public ActionResult About()
         {
+            var stringQuery = HttpContext.Request.QueryString.Get("Id");
+            if (stringQuery != null)
+            {
+                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+            }
+            else
+                return HttpNotFound();
             // Commenting out LINQ to show how to do the same thing in SQL.
             //IQueryable<EnrollmentDateGroup> = from student in db.Students
             //           group student by student.EnrollmentDate into dateGroup
@@ -45,10 +52,10 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);
-        }
+    //    protected override void Dispose(bool disposing)
+     //   {
+     //       db.Dispose();
+      //      base.Dispose(disposing);
+      //  }
     }
 }

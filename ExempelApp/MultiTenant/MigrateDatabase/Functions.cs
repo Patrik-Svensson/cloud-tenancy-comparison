@@ -20,7 +20,7 @@ namespace MigrateDatabase
 
             var configuration = new WebApplication.Migrations.Configuration
             {
-                TargetDatabase = new System.Data.Entity.Infrastructure.DbConnectionInfo(Common.ConnectionTenantDb.GetConnectionStringForTenant(tenantId), "System.Data.SqlClient"),
+                TargetDatabase = new System.Data.Entity.Infrastructure.DbConnectionInfo(Common.ConnectionTenantDb.GetConnectionStringForTenant(Int32.Parse(tenantId)), "System.Data.SqlClient"),
                 MigrationsDirectory = "Migrations",
             };
 
