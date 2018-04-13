@@ -23,7 +23,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(Int32.Parse(HttpContext.Request.QueryString.Get("Id"))).db;
+                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
             }
             else
                 return HttpNotFound();

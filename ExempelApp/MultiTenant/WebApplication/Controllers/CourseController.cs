@@ -15,7 +15,8 @@ namespace WebApplication.Controllers
 {
     public class CourseController : Controller
     {
-        private SchoolContext db;// = new SchoolContext();
+        // TODO: En context ska vara korfattad, sedan "dispose"
+        private SchoolContext db;// = new SchoolContext()
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
         {
@@ -27,7 +28,7 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    db = Tenant.getTenant(Int32.Parse(query)).db;
+                    db = Tenant.getTenant(query).db;
                 }catch(NullReferenceException e)
                 {
                     return HttpNotFound();
@@ -45,7 +46,6 @@ namespace WebApplication.Controllers
         }
 
         // TODO: Find solution for tenant aware caching
-
         private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
         {
             // Check for object in cache, if it is 
@@ -86,7 +86,7 @@ namespace WebApplication.Controllers
             }
             if (query != null)
             {
-                db = Tenant.getTenant(Int32.Parse(query)).db;
+                db = Tenant.getTenant(query).db;
                 course = db.Courses.Find(id);
             }
             else
@@ -101,7 +101,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(Int32.Parse(query)).db;
+                db = Tenant.getTenant(query).db;
             }
             else
                 return HttpNotFound();
@@ -117,7 +117,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(Int32.Parse(query)).db;
+                db = Tenant.getTenant(query).db;
             }
             else
                 return HttpNotFound();
@@ -145,7 +145,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(Int32.Parse(query)).db;
+                db = Tenant.getTenant(query).db;
             }
             else
                 return HttpNotFound();
@@ -170,7 +170,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(Int32.Parse(query)).db;
+                db = Tenant.getTenant(query).db;
             }
             else
                 return HttpNotFound();
@@ -214,7 +214,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(Int32.Parse(query)).db;
+                db = Tenant.getTenant(query).db;
             }
             else
                 return HttpNotFound();
@@ -239,7 +239,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(Int32.Parse(query)).db;
+                db = Tenant.getTenant(query).db;
             }
             else
                 return HttpNotFound();
@@ -261,7 +261,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(Int32.Parse(query)).db;
+                db = Tenant.getTenant(query).db;
             }
             else
                 return HttpNotFound();
