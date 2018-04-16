@@ -23,7 +23,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return View();
@@ -78,7 +78,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -111,7 +111,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -140,7 +140,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -167,7 +167,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -201,7 +201,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -230,7 +230,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -248,13 +248,13 @@ namespace WebApplication.Controllers
             }
             return RedirectToAction("Index");
         }
-        /*protected override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (db != null)
             {
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }*/
+        }
     }
 }

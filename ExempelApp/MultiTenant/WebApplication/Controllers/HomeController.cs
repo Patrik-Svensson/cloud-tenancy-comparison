@@ -6,12 +6,11 @@ using System.Web.Mvc;
 using WebApplication.DAL;
 using WebApplication.ViewModels;
 
-
 namespace WebApplication.Controllers
 {
     public class HomeController : Controller
     {
-        private SchoolContext db; //= new SchoolContext();
+        private SchoolContext db;
 
         public ActionResult Index()
         {
@@ -23,7 +22,7 @@ namespace WebApplication.Controllers
             var stringQuery = HttpContext.Request.QueryString.Get("Id");
             if (stringQuery != null)
             {
-                db = Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -52,10 +51,11 @@ namespace WebApplication.Controllers
             return View();
         }
 
-    //    protected override void Dispose(bool disposing)
-     //   {
-     //       db.Dispose();
-      //      base.Dispose(disposing);
-      //  }
+        protected override void Dispose(bool disposing)
+        {
+            if(db != null)
+                db.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -20,11 +20,9 @@ namespace WebApplication.DAL
         {
             this.id = id;
             this.connectionString = connectionString;
-            db = new SchoolContext(connectionString);
         }
 
         public string id { get; }
-        public SchoolContext db { get; }
         public string connectionString { get; }
 
         public static Tenant getTenant(string id)

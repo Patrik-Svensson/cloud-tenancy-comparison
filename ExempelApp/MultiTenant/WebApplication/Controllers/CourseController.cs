@@ -16,7 +16,9 @@ namespace WebApplication.Controllers
     public class CourseController : Controller
     {
         // TODO: En context ska vara korfattad, sedan "dispose"
-        private SchoolContext db;// = new SchoolContext()
+        private SchoolContext db;
+
+
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
         {
@@ -28,8 +30,9 @@ namespace WebApplication.Controllers
             {
                 try
                 {
-                    db = Tenant.getTenant(query).db;
-                }catch(NullReferenceException e)
+                    db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
+                }
+                catch(NullReferenceException e)
                 {
                     return HttpNotFound();
                 }
@@ -50,6 +53,9 @@ namespace WebApplication.Controllers
         {
             // Check for object in cache, if it is 
             // Here the default memory cache is used directly
+
+           // var result = TenantCache.getCachedData(SelectedDepartment, departmentID, "");
+
             var cache = MemoryCache.Default;
             string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
 
@@ -61,7 +67,7 @@ namespace WebApplication.Controllers
                 // Cache for 
                 cache.Add(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
             }
-
+            
             return result;
         }
 
@@ -86,7 +92,7 @@ namespace WebApplication.Controllers
             }
             if (query != null)
             {
-                db = Tenant.getTenant(query).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
                 course = db.Courses.Find(id);
             }
             else
@@ -101,7 +107,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(query).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -117,7 +123,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(query).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -145,7 +151,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(query).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -170,7 +176,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(query).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -214,7 +220,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(query).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -239,7 +245,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(query).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -261,7 +267,7 @@ namespace WebApplication.Controllers
             var query = HttpContext.Request.QueryString.Get("Id");
             if (query != null)
             {
-                db = Tenant.getTenant(query).db;
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
             }
             else
                 return HttpNotFound();
@@ -273,13 +279,13 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        /*protected override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (db != null)
             {
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }*/
+        }
     }
 }

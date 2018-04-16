@@ -274,6 +274,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ICache.cs" />
+    <Compile Include="ISettingsProvider.cs" />
+    <Compile Include="ITenantIdProvider.cs" />
     <Compile Include="Migrations\201411021828194_InitialCreate.cs" />
     <Compile Include="Migrations\201411021828194_InitialCreate.Designer.cs">
       <DependentUpon>201411021828194_InitialCreate.cs</DependentUpon>
@@ -312,6 +315,7 @@
     <Compile Include="Models\Student.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TenantCache.cs" />
     <Compile Include="ViewModels\AssignedCourseData.cs" />
     <Compile Include="ViewModels\EnrollmentDateGroup.cs" />
     <Compile Include="ViewModels\InstructorIndexData.cs" />
