@@ -4,26 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using Serilog;
 
 namespace MigrateDatabase
 {
-	// To learn more about Microsoft Azure WebJobs SDK, please see https://go.microsoft.com/fwlink/?LinkID=320976
-	class Program
-	{
-		// Please set the following connection strings in app.config for this WebJob to run:
-		// AzureWebJobsDashboard and AzureWebJobsStorage
-		static void Main()
-		{
-			var config = new JobHostConfiguration();
+    // To learn more about Microsoft Azure WebJobs SDK, please see https://go.microsoft.com/fwlink/?LinkID=320976
+    class Program
+    {
+        // Please set the following connection strings in app.config for this WebJob to run:
+        // AzureWebJobsDashboard and AzureWebJobsStorage
+        static int Main(string[] arguments)
+        {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console(Serilog.Events.LogEventLevel.Verbose)
+                .CreateLogger();
 
-			if (config.IsDevelopment)
-			{
-				config.UseDevelopmentSettings();
-			}
+            string tenant;
 
-			var host = new JobHost(config);
-			// The following code ensures that the WebJob will be running continuously
-			host.Call(typeof(Functions).GetMethod(nameof(Functions.Migrate)));
-		}
-	}
+            if (arguments.Length != 1)
+            {
+                Console.WriteLine("TenantId: ");
+                tenant = Console.ReadLine().Trim();
+            }
+            else
+            {
+                tenant = arguments[0];
+            }
+
+            Functions.Migrate(tenant);
+
+            return 0;
+        }
+    }
 }

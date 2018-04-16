@@ -64,7 +64,6 @@ namespace WebApplication.Controllers
             if (!initTenantContext())
                 return HttpNotFound();
 
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -79,6 +78,9 @@ namespace WebApplication.Controllers
 
         public ActionResult Create()
         {
+            if (!initTenantContext())
+                return HttpNotFound();
+
             var instructor = new Instructor();
             instructor.Courses = new List<Course>();
             PopulateAssignedCourseData(instructor);
@@ -158,6 +160,9 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int? id, string[] selectedCourses)
         {
+            if (!initTenantContext())
+                return HttpNotFound();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -280,10 +285,10 @@ namespace WebApplication.Controllers
         }
         private bool initTenantContext()
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
+            var query = HttpContext.Request.QueryString.Get("TenantId");
             if (query != null)
             {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("TenantId")).connectionString);
                 return true;
             }
 

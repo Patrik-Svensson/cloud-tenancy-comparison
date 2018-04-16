@@ -9,21 +9,18 @@ namespace WebApplication.DAL
     public class SchoolContext : DbContext
     {
         public SchoolContext()
-            : base(GetConnectionString()) // Tar connection strign från web.config
+            : this(GetConnectionString())
         {
-            
+
         }
+
+        public SchoolContext(string connectionString)
+            : base(connectionString) // Tar connection strign från web.config
+        {}
 
         private static string GetConnectionString()
         {
-            // HttpContext.Current  är null när man kör migrations
-            if (HttpContext.Current != null)
-            {
-                var httpRequst = HttpContext.Current.Request;
-                Debug.WriteLine("Creating SchoolContext for request url {0}", httpRequst.RawUrl);
-            }
-
-            return "name=SchoolContext";
+            return Common.ConnectionTenantDb.GetConnectionString();
         }
 
         public DbSet<Course> Courses { get; set; }
