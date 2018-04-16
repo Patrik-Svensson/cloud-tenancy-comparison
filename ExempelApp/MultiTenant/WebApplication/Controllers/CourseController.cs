@@ -18,32 +18,19 @@ namespace WebApplication.Controllers
         // TODO: En context ska vara korfattad, sedan "dispose"
         private SchoolContext db;
 
-
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
+            if (!initTenantContext())
+                return HttpNotFound();
+
             int departmentID;
             IEnumerable<Course> courses;
 
-            if (query != null)
-            {
-                try
-                {
-                    db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-                }
-                catch(NullReferenceException e)
-                {
-                    return HttpNotFound();
-                }
-                var departments = db.Departments.OrderBy(q => q.Name).ToList();
-                ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
-                departmentID = SelectedDepartment.GetValueOrDefault();
-
-                courses = LoadCourses(SelectedDepartment, departmentID);
-            }
-            else
-                return HttpNotFound();
+            var departments = db.Departments.OrderBy(q => q.Name).ToList();
+            ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+            departmentID = SelectedDepartment.GetValueOrDefault();
+            courses = LoadCourses(SelectedDepartment, departmentID);
 
             return View(courses);
         }
@@ -104,12 +91,7 @@ namespace WebApplication.Controllers
 
         public ActionResult Create()
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
-            if (query != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             PopulateDepartmentsDropDownList();
@@ -120,12 +102,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")]Course course)
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
-            if (query != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             try
@@ -148,14 +125,9 @@ namespace WebApplication.Controllers
 
         public ActionResult Edit(int? id)
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
-            if (query != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
-        
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -173,12 +145,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditPost(int? id)
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
-            if (query != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -217,12 +184,7 @@ namespace WebApplication.Controllers
         // GET: Course/Delete/5
         public ActionResult Delete(int? id)
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
-            if (query != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -242,12 +204,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
-            if (query != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             Course course = db.Courses.Find(id);
@@ -264,12 +221,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public ActionResult UpdateCourseCredits(int? multiplier)
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
-            if (query != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (multiplier != null)
@@ -286,6 +238,18 @@ namespace WebApplication.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private bool initTenantContext()
+        {
+            var query = HttpContext.Request.QueryString.Get("Id");
+            if (query != null)
+            {
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
+                return true;
+            }
+            
+            return false;
         }
     }
 }

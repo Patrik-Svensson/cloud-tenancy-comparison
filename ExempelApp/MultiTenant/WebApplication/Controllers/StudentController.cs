@@ -15,7 +15,7 @@ namespace WebApplication.Controllers
 {
     public class StudentController : Controller
     {
-        private SchoolContext db;// = new SchoolContext();
+        private SchoolContext db;
 
         // GET: Student
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
@@ -75,12 +75,7 @@ namespace WebApplication.Controllers
         // GET: Student/Details/5
         public ActionResult Details(int? id)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -108,12 +103,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "LastName, FirstMidName, EnrollmentDate")]Student student)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             try
@@ -137,12 +127,7 @@ namespace WebApplication.Controllers
         // GET: Student/Edit/5
         public ActionResult Edit(int? id)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -164,12 +149,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditPost(int? id)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -198,12 +178,7 @@ namespace WebApplication.Controllers
         // GET: Student/Delete/5
         public ActionResult Delete(int? id, bool? saveChangesError = false)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -227,12 +202,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             try
@@ -255,6 +225,17 @@ namespace WebApplication.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+        private bool initTenantContext()
+        {
+            var query = HttpContext.Request.QueryString.Get("Id");
+            if (query != null)
+            {
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
+                return true;
+            }
+
+            return false;
         }
     }
 }

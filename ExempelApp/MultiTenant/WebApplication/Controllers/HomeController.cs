@@ -19,12 +19,7 @@ namespace WebApplication.Controllers
 
         public ActionResult About()
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
             // Commenting out LINQ to show how to do the same thing in SQL.
             //IQueryable<EnrollmentDateGroup> = from student in db.Students
@@ -56,6 +51,17 @@ namespace WebApplication.Controllers
             if(db != null)
                 db.Dispose();
             base.Dispose(disposing);
+        }
+        private bool initTenantContext()
+        {
+            var query = HttpContext.Request.QueryString.Get("Id");
+            if (query != null)
+            {
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
+                return true;
+            }
+
+            return false;
         }
     }
 }

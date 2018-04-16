@@ -15,17 +15,12 @@ namespace WebApplication.Controllers
 {
     public class DepartmentController : Controller
     {
-        private SchoolContext db; //= new SchoolContext();
+        private SchoolContext db;
 
         // GET: Department
         public async Task<ActionResult> Index()
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             var departments = db.Departments.Include(d => d.Administrator);
@@ -35,12 +30,7 @@ namespace WebApplication.Controllers
         // GET: Department/Details/5
         public async Task<ActionResult> Details(int? id)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -65,12 +55,7 @@ namespace WebApplication.Controllers
         // GET: Department/Create
         public ActionResult Create()
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "FullName");
@@ -84,12 +69,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "DepartmentID,Name,Budget,StartDate,InstructorID")] Department department)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (ModelState.IsValid)
@@ -106,12 +86,7 @@ namespace WebApplication.Controllers
         // GET: Department/Edit/5
         public async Task<ActionResult> Edit(int? id)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -134,12 +109,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int? id, byte[] rowVersion)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             string[] fieldsToBind = new string[] { "Name", "Budget", "StartDate", "InstructorID", "RowVersion" };
@@ -216,12 +186,7 @@ namespace WebApplication.Controllers
         // GET: Department/Delete/5
         public async Task<ActionResult> Delete(int? id, bool? concurrencyError)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             if (id == null)
@@ -256,12 +221,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(Department department)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+            if (!initTenantContext())
                 return HttpNotFound();
 
             try
@@ -290,6 +250,18 @@ namespace WebApplication.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private bool initTenantContext()
+        {
+            var query = HttpContext.Request.QueryString.Get("Id");
+            if (query != null)
+            {
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
+                return true;
+            }
+
+            return false;
         }
     }
 }
