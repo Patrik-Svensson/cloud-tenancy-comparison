@@ -36,14 +36,14 @@ namespace WebApplication.Controllers
         }
 
         // TODO: Find solution for tenant aware caching
-        private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
+        private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID, string )
         {
             // Check for object in cache, if it is 
             // Here the default memory cache is used directly
 
            // var result = TenantCache.getCachedData(SelectedDepartment, departmentID, "");
 
-            var cache = MemoryCache.Default;
+            /*var cache = MemoryCache.Default;
             string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
 
             List<Course> result = (List<Course>)cache.Get(cacheKey);
@@ -53,7 +53,7 @@ namespace WebApplication.Controllers
 
                 // Cache for 
                 cache.Add(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
-            }
+            }*/
             
             return result;
         }
