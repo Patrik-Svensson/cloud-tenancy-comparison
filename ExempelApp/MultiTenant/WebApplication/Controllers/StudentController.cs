@@ -20,13 +20,10 @@ namespace WebApplication.Controllers
         // GET: Student
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            var stringQuery = HttpContext.Request.QueryString.Get("Id");
-            if (stringQuery != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-            }
-            else
+
+            if (!initTenantContext())
                 return View();
+        
 
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -228,10 +225,10 @@ namespace WebApplication.Controllers
         }
         private bool initTenantContext()
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
+            var query = HttpContext.Request.QueryString.Get("TenantId");
             if (query != null)
             {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("TenantId")).connectionString);
                 return true;
             }
 

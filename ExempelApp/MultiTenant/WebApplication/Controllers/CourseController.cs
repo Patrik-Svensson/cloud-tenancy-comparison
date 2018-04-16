@@ -70,21 +70,21 @@ namespace WebApplication.Controllers
         // GET: Course/Details/5
         public ActionResult Details(int? id)
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
-            Course course = null;
+
+            if (!initTenantContext())
+                return HttpNotFound();
 
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            if (query != null)
+            
+            Course course = db.Courses.Find(id);
+            if (course == null)
             {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
-                course = db.Courses.Find(id);
-            }
-            else
                 return HttpNotFound();
-       
+            }
+
             return View(course);
         }
 
@@ -242,10 +242,10 @@ namespace WebApplication.Controllers
 
         private bool initTenantContext()
         {
-            var query = HttpContext.Request.QueryString.Get("Id");
+            var query = HttpContext.Request.QueryString.Get("TenantId");
             if (query != null)
             {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("Id")).connectionString);
+                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("TenantId")).connectionString);
                 return true;
             }
             
