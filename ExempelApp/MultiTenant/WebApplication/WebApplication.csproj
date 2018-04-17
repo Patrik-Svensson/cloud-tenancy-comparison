@@ -314,6 +314,7 @@
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryIdProvider.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="TenantCache.cs" />
     <Compile Include="ViewModels\AssignedCourseData.cs" />

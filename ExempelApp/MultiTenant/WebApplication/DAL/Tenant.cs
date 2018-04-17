@@ -20,7 +20,6 @@ namespace WebApplication.DAL
         {
             this.id = id;
             this.connectionString = connectionString;
-            cache = new TenantCache(id);
         }
 
         public string id { get; }

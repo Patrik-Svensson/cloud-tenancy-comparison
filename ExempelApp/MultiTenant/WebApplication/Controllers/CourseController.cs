@@ -15,7 +15,6 @@ namespace WebApplication.Controllers
 {
     public class CourseController : Controller
     {
-        // TODO: En context ska vara korfattad, sedan "dispose"
         private SchoolContext db;
 
         // GET: Course
@@ -35,26 +34,18 @@ namespace WebApplication.Controllers
             return View(courses);
         }
 
-        // TODO: Find solution for tenant aware caching
-        private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID, string )
+        private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
         {
-            // Check for object in cache, if it is 
-            // Here the default memory cache is used directly
-
-           // var result = TenantCache.getCachedData(SelectedDepartment, departmentID, "");
-
-            /*var cache = MemoryCache.Default;
             string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
+            ICache cache = new TenantCache(new QueryIdProvider());
 
             List<Course> result = (List<Course>)cache.Get(cacheKey);
             if (result == null)
             {
                 result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
+                cache.Set(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
+            }
 
-                // Cache for 
-                cache.Add(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
-            }*/
-            
             return result;
         }
 

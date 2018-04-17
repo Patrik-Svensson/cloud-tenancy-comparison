@@ -6,39 +6,23 @@ using WebApplication.DAL;
 
 public class TenantCache : ICache
 {
-    private MemoryCache cache;
-    private SchoolContext db;
-    string tenantId;
+    private static MemoryCache memoryCache = MemoryCache.Default;
+    private readonly ITenantIdProvider _tenantIdProvider;
 
-    public TenantCache(string tenantId)
+    public TenantCache(ITenantIdProvider tenantIdProvider)
     {
-        this.tenantId = tenantId;
-        cache = new MemoryCache(tenantId);
+        _tenantIdProvider = tenantIdProvider;
     }
 
-    public IEnumerable<Course> GetCachedData(int selectedDepartment, int departmentId, string tenantId)
+    void ICache.Set(string key, object value, DateTimeOffset absoluteExpiration)
     {
-        string cacheKey = $"CourseController.LoadCourses({selectedDepartment},{departmentId})";
-
-        List<Course> result = (List<Course>)cache.Get(cacheKey);
-
-        if (result == null)
-        {
-            result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
-
-            // Cache for 
-            cache.Add(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
-        }
-
-        return null;
+        string tenantKey = String.Concat(key, _tenantIdProvider.TenantId);
+        memoryCache.Add(tenantKey, value, absoluteExpiration);
     }
 
-    private List<Course> LoadCoursesFromDatabase(int? SelectedDepartment, int departmentID)
+    object ICache.Get(string key)
     {
-        return db.Courses
-            .Where(c => !SelectedDepartment.HasValue || c.DepartmentID == departmentID)
-            .OrderBy(d => d.CourseID)
-            .Include(d => d.Department)
-            .ToList();
+        string tenantKey = String.Concat(key, _tenantIdProvider.TenantId);
+        return memoryCache.Get(tenantKey);
     }
 }
