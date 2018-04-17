@@ -15,7 +15,15 @@ namespace WebApplication.Controllers
 {
     public class CourseController : Controller
     {
-        private SchoolContext db;
+        // TODO: En context ska vara korfattad, sedan "dispose"
+        private readonly SchoolContext db;
+        private readonly ICache _cache;
+
+        public CourseController(SchoolContext ctx, ICache cache)
+        {
+            db = ctx;
+            _cache = cache;
+        }
 
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
@@ -69,7 +77,7 @@ namespace WebApplication.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            
+
             Course course = db.Courses.Find(id);
             if (course == null)
             {
@@ -231,16 +239,9 @@ namespace WebApplication.Controllers
             base.Dispose(disposing);
         }
 
-        private bool initTenantContext()
+        bool initTenantContext()
         {
-            var query = HttpContext.Request.QueryString.Get("TenantId");
-            if (query != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("TenantId")).connectionString);
-                return true;
-            }
-            
-            return false;
+            return true;
         }
     }
 }
