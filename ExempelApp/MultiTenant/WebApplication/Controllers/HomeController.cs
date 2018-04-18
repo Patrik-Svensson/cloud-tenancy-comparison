@@ -10,11 +10,19 @@ namespace WebApplication.Controllers
 {
     public class HomeController : Controller
     {
-        private SchoolContext db;
+        private readonly SchoolContext db;
         private QueryIdProvider provider = new QueryIdProvider();
+
+        public HomeController(SchoolContext db)
+        {
+            this.db = db;
+        }
 
         public ActionResult Index()
         {
+            // TODO: Lagra per tenant setting 
+            ViewBag.KUNDNAMN = System.Configuration.ConfigurationManager.AppSettings["ApplicationName"];
+
             return View();
         }
 
@@ -54,14 +62,8 @@ namespace WebApplication.Controllers
             base.Dispose(disposing);
         }
         private bool initTenantContext()
-        {
-            if (provider.TenantId() != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("TenantId")).connectionString);
-                return true;
-            }
-
-            return false;
+        { 
+            return true;
         }
     }
 }

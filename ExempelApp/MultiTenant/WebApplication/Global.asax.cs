@@ -61,10 +61,10 @@ namespace WebApplication
 
             // Setup implementations
             // If query id provider can be shared use
-            // builder.RegisterInstance<ITenantIdProvider>(new QueryIdProvider());
-            builder.RegisterType<QueryIdProvider>().As<ITenantIdProvider>().InstancePerRequest();
-            builder.RegisterType<TenantCache>().As<ICache>();
-            builder.RegisterType<SchoolContext>().InstancePerRequest();
+            builder.RegisterInstance<ITenantIdProvider>(new QueryIdProvider());
+            //builder.RegisterType<QueryIdProvider>().As<ITenantIdProvider>().InstancePerRequest();
+            builder.RegisterType<TenantCache>().As<ICache>().InstancePerRequest();
+            builder.Register(container => new SchoolContext(container.Resolve<ITenantIdProvider>())).InstancePerRequest();
             
         }
     }

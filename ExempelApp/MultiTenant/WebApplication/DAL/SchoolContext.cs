@@ -9,19 +9,27 @@ namespace WebApplication.DAL
 {
     public class SchoolContext : DbContext
     {
-        public SchoolContext() 
-            :this(GetConnectionString())
-        {}  
+        public SchoolContext()
+            : this(GetConnectionString())
+        { }
 
         public SchoolContext(string connectionString)
             : base(connectionString)
         {
 
         }
+        public SchoolContext(ITenantIdProvider tenantIdProvider)
+            : this(GetConnectionString(tenantIdProvider))
+        { }
 
         private static string GetConnectionString()
         {
             return Common.ConnectionTenantDb.GetConnectionString();
+        }
+
+        private static string GetConnectionString(ITenantIdProvider tenantIdProvider)
+        {
+            return Common.ConnectionTenantDb.GetConnectionStringForTenant(tenantIdProvider.TenantId());
         }
 
         public DbSet<Course> Courses { get; set; }

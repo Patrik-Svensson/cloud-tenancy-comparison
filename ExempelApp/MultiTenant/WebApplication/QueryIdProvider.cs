@@ -11,11 +11,19 @@ namespace WebApplication
 
         public QueryIdProvider()
         {
-            _tenantId = HttpContext.Current.Request.QueryString.Get("TenantId");
+           
         }
 
         public string TenantId()
         {
+            _tenantId = HttpContext.Current.Request.QueryString.Get("TenantId");
+
+            //FOR TESTING
+            if(_tenantId == null)
+            {
+                return "1";
+            }
+          
             return _tenantId;
         }
     }

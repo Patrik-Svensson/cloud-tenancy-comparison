@@ -15,8 +15,13 @@ namespace WebApplication.Controllers
 {
     public class InstructorController : Controller
     {
-        private SchoolContext db;
+        private readonly SchoolContext db;
         private QueryIdProvider provider = new QueryIdProvider();
+
+        public InstructorController(SchoolContext db)
+        {
+            this.db = db;
+        }
 
         // GET: Instructor
         public ActionResult Index(int? id, int? courseID)
@@ -286,13 +291,7 @@ namespace WebApplication.Controllers
         }
         private bool initTenantContext()
         {
-            if (provider.TenantId() != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("TenantId")).connectionString);
-                return true;
-            }
-
-            return false;
+            return true;
         }
     }
 }

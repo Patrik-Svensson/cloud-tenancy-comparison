@@ -15,8 +15,13 @@ namespace WebApplication.Controllers
 {
     public class DepartmentController : Controller
     {
-        private SchoolContext db;
+        private readonly SchoolContext db;
         private QueryIdProvider provider = new QueryIdProvider();
+
+        public DepartmentController(SchoolContext db)
+        {
+            this.db = db;
+        }
 
         // GET: Department
         public async Task<ActionResult> Index()
@@ -255,13 +260,7 @@ namespace WebApplication.Controllers
 
         private bool initTenantContext()
         {
-            if (provider.TenantId() != null)
-            {
-                db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("TenantId")).connectionString);
-                return true;
-            }
-
-            return false;
+            return true;
         }
     }
 }

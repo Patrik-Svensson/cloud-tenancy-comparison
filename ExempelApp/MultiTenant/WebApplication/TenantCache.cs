@@ -6,7 +6,14 @@ using WebApplication.DAL;
 
 public class TenantCache : ICache
 {
-    private static MemoryCache memoryCache = MemoryCache.Default;
+    private static MemoryCache memoryCache
+    {
+        get
+        {
+            return MemoryCache.Default;
+        }
+    }
+
     private readonly ITenantIdProvider _tenantIdProvider;
 
     public TenantCache(ITenantIdProvider tenantIdProvider)

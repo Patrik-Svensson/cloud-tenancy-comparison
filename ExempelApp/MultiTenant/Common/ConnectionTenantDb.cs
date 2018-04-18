@@ -24,7 +24,14 @@ namespace Common
             {
                 var httpRequst = HttpContext.Current.Request;
                 Debug.WriteLine("Creating SchoolContext for request url {0}", httpRequst.RawUrl);
-                tenantId = httpRequst.QueryString.Get("Id");
+                tenantId = httpRequst.QueryString.Get("TenantId");
+
+                //@startup eg. localhost:53369/ no tenant id is given. For testing purposes.
+                if (tenantId == null)
+                {
+                    tenantId = "1";
+                   
+                }
                 connectionString = GetConnectionStringForTenant(tenantId);
             }
             else
@@ -39,6 +46,8 @@ namespace Common
             //return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=Exjobb1;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=10;";
             return connectionString;
         }
+
+
 
         public static string GetConnectionStringForTenant(string tenantId)
         {

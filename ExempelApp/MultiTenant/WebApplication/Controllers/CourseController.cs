@@ -15,7 +15,6 @@ namespace WebApplication.Controllers
 {
     public class CourseController : Controller
     {
-        // TODO: En context ska vara korfattad, sedan "dispose"
         private readonly SchoolContext db;
         private readonly ICache _cache;
 
@@ -45,13 +44,13 @@ namespace WebApplication.Controllers
         private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
         {
             string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
-            ICache cache = new TenantCache(new QueryIdProvider());
+            //ICache cache = new TenantCache(new QueryIdProvider());
 
-            List<Course> result = (List<Course>)cache.Get(cacheKey);
+            List<Course> result = (List<Course>)_cache.Get(cacheKey);
             if (result == null)
             {
                 result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
-                cache.Set(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
+                _cache.Set(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
             }
 
             return result;
@@ -239,7 +238,7 @@ namespace WebApplication.Controllers
             base.Dispose(disposing);
         }
 
-        bool initTenantContext()
+        private bool initTenantContext()
         {
             return true;
         }
