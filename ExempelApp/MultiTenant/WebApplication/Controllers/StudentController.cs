@@ -16,6 +16,7 @@ namespace WebApplication.Controllers
     public class StudentController : Controller
     {
         private SchoolContext db;
+        private QueryIdProvider provider = new QueryIdProvider();
 
         // GET: Student
         public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
@@ -225,8 +226,7 @@ namespace WebApplication.Controllers
         }
         private bool initTenantContext()
         {
-            var query = HttpContext.Request.QueryString.Get("TenantId");
-            if (query != null)
+            if (provider.TenantId() != null)
             {
                 db = new SchoolContext(Tenant.getTenant(HttpContext.Request.QueryString.Get("TenantId")).connectionString);
                 return true;

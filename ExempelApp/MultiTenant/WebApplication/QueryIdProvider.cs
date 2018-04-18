@@ -14,9 +14,9 @@ namespace WebApplication
             _tenantId = HttpContext.Current.Request.QueryString.Get("TenantId");
         }
 
-        string ITenantIdProvider.TenantId
+        public string TenantId()
         {
-            get { return _tenantId; }
+            return _tenantId;
         }
     }
 }

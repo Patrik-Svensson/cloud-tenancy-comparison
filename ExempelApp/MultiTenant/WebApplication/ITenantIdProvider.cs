@@ -2,5 +2,5 @@
 
 public interface ITenantIdProvider
 {
-    string TenantId { get; }
+    string TenantId();
 }

@@ -16,13 +16,13 @@ public class TenantCache : ICache
 
     void ICache.Set(string key, object value, DateTimeOffset absoluteExpiration)
     {
-        string tenantKey = String.Concat(key, _tenantIdProvider.TenantId);
+        string tenantKey = String.Concat(key, _tenantIdProvider.TenantId());
         memoryCache.Add(tenantKey, value, absoluteExpiration);
     }
 
     object ICache.Get(string key)
     {
-        string tenantKey = String.Concat(key, _tenantIdProvider.TenantId);
+        string tenantKey = String.Concat(key, _tenantIdProvider.TenantId());
         return memoryCache.Get(tenantKey);
     }
 }
