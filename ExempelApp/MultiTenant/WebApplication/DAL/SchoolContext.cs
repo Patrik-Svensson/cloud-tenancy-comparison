@@ -27,9 +27,10 @@ namespace WebApplication.DAL
             return Common.ConnectionTenantDb.GetConnectionString();
         }
 
-        private static string GetConnectionString(ITenantIdProvider tenantIdProvider)
+        private static string GetConnectionString(ITenantIdProvider idProvider)
         {
-            return Common.ConnectionTenantDb.GetConnectionStringForTenant(tenantIdProvider.TenantId());
+            return (string)ConnectionStringProvider.connectionstringProvider.Get(idProvider);
+            //return Common.ConnectionTenantDb.GetConnectionStringForTenant(idProvider.TenantId());
         }
 
         public DbSet<Course> Courses { get; set; }

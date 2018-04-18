@@ -70,5 +70,28 @@ namespace Common
 
             return connectionStringTenant;
         }
+
+        public static string GetDisplayNameForTenant(string tenantId)
+        {
+
+            string displayName = null;
+
+            try
+            {
+                catalogDbConnection.Open();
+                SqlCommand command = new SqlCommand("SELECT DisplayName FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
+                displayName = (string)command.ExecuteScalar(); 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+            finally
+            {
+                catalogDbConnection.Close();
+            }
+
+            return displayName;  
+        }
     }
 }

@@ -11,17 +11,22 @@ namespace WebApplication.Controllers
     public class HomeController : Controller
     {
         private readonly SchoolContext db;
+        private ITenantIdProvider _idProvider;
+        private ISettingsProvider _catalogProvider = new CatalogProvider();
         private QueryIdProvider provider = new QueryIdProvider();
 
-        public HomeController(SchoolContext db)
+        public HomeController(SchoolContext db, ITenantIdProvider idProvider)
         {
             this.db = db;
+            this._idProvider = idProvider;
         }
 
         public ActionResult Index()
         {
             // TODO: Lagra per tenant setting 
-            ViewBag.KUNDNAMN = System.Configuration.ConfigurationManager.AppSettings["ApplicationName"];
+            // ViewBag.KUNDNAMN = System.Configuration.ConfigurationManager.AppSettings["ApplicationName"];
+            //ViewBag.KUNDNAMN = Common.ConnectionTenantDb.GetDisplayNameForTenant(HttpContext.Request.QueryString.Get("TenantId"));
+            ViewBag.KUNDNAMN = _catalogProvider.Get(_idProvider);
 
             return View();
         }
