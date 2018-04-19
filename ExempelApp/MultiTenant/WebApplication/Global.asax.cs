@@ -64,8 +64,10 @@ namespace WebApplication
             builder.RegisterInstance<ITenantIdProvider>(new QueryIdProvider());
             //builder.RegisterType<QueryIdProvider>().As<ITenantIdProvider>().InstancePerRequest();
             builder.RegisterType<TenantCache>().As<ICache>().InstancePerRequest();
-            builder.Register(container => new SchoolContext(container.Resolve<ITenantIdProvider>())).InstancePerRequest();
-            
+            //builder.Register(container => new SchoolContext(container.Resolve<ITenantIdProvider>())).InstancePerRequest();
+            builder.Register(container => new SchoolContext(container.Resolve<ISettingsProvider>())).InstancePerRequest();
+            builder.RegisterType<CatalogSettingsProvider>().As<ISettingsProvider>().InstancePerRequest();
+
         }
     }
 }

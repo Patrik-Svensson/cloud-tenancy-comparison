@@ -18,8 +18,12 @@ namespace WebApplication.DAL
         {
 
         }
-        public SchoolContext(ITenantIdProvider tenantIdProvider)
+        /*public SchoolContext(ITenantIdProvider tenantIdProvider)
             : this(GetConnectionString(tenantIdProvider))
+        { }*/
+        
+        public SchoolContext(ISettingsProvider settingsProvider)
+            : this((settingsProvider.GetConnectionString()))
         { }
 
         private static string GetConnectionString()
@@ -27,12 +31,12 @@ namespace WebApplication.DAL
             return Common.ConnectionTenantDb.GetConnectionString();
         }
 
-        private static string GetConnectionString(ITenantIdProvider idProvider)
+        /*private static string GetConnectionString(ITenantIdProvider idProvider)
         {
-            return (string)ConnectionStringProvider.connectionstringProvider.Get(idProvider);
-            //return Common.ConnectionTenantDb.GetConnectionStringForTenant(idProvider.TenantId());
-        }
-
+            //return CatalogSettingsProvider.GetConnectionString();
+            //return (string)ConnectionStringProvider.connectionstringProvider.Get(idProvider);
+            return Common.ConnectionTenantDb.GetConnectionStringForTenant(idProvider.TenantId());
+        }*/
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
