@@ -37,8 +37,7 @@ namespace WebApplication
             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
             // MVC
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
-
-
+            
             //
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
@@ -65,7 +64,11 @@ namespace WebApplication
             //builder.RegisterType<QueryIdProvider>().As<ITenantIdProvider>().InstancePerRequest();
             builder.RegisterType<TenantCache>().As<ICache>().InstancePerRequest();
             //builder.Register(container => new SchoolContext(container.Resolve<ITenantIdProvider>())).InstancePerRequest();
-            builder.Register(container => new SchoolContext(container.Resolve<ISettingsProvider>())).InstancePerRequest();
+
+            builder.Register(container => new SchoolContext(container.Resolve<ISettingsProvider>(), container.Resolve<ITenantIdProvider>() )).InstancePerRequest();
+
+
+
             builder.RegisterType<CatalogSettingsProvider>().As<ISettingsProvider>().InstancePerRequest();
 
         }

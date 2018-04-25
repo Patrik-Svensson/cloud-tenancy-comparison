@@ -62,8 +62,10 @@ namespace WebApplication.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            if(db != null)
+            if (db != null)
+            {
                 db.Dispose();
+            }
             base.Dispose(disposing);
         }
         private bool initTenantContext()
