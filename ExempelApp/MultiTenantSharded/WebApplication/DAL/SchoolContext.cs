@@ -19,9 +19,6 @@ namespace WebApplication.DAL
         {
 
         }
-        /*public SchoolContext(ITenantIdProvider tenantIdProvider)
-            : this(GetConnectionString(tenantIdProvider))
-        { }*/
         
         public SchoolContext(ISettingsProvider settingsProvider)
             : this((settingsProvider.GetConnectionString()))
@@ -29,8 +26,7 @@ namespace WebApplication.DAL
 
         private static string GetConnectionString()
         {
-            // Running Add-Migration, Update-Database or similar
-            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSharded1;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSharded02;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
 
         /*private static string GetConnectionString(ITenantIdProvider idProvider)

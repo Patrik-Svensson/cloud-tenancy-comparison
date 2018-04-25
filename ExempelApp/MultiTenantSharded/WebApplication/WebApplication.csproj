@@ -322,25 +322,17 @@
     <Compile Include="Migrations\201804061114059_dummy.Designer.cs">
       <DependentUpon>201804061114059_dummy.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201804191103247_AddShardedKey.cs" />
-    <Compile Include="Migrations\201804191103247_AddShardedKey.Designer.cs">
-      <DependentUpon>201804191103247_AddShardedKey.cs</DependentUpon>
+    <Compile Include="Migrations\201804200809459_AddedShardedKeys.cs" />
+    <Compile Include="Migrations\201804200809459_AddedShardedKeys.Designer.cs">
+      <DependentUpon>201804200809459_AddedShardedKeys.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201804191159527_ChangedPropertyName.cs" />
-    <Compile Include="Migrations\201804191159527_ChangedPropertyName.Designer.cs">
-      <DependentUpon>201804191159527_ChangedPropertyName.cs</DependentUpon>
+    <Compile Include="Migrations\201804230730421_AddedMissingShardedkey.cs" />
+    <Compile Include="Migrations\201804230730421_AddedMissingShardedkey.Designer.cs">
+      <DependentUpon>201804230730421_AddedMissingShardedkey.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201804191226279_AddedTenantId.cs" />
-    <Compile Include="Migrations\201804191226279_AddedTenantId.Designer.cs">
-      <DependentUpon>201804191226279_AddedTenantId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201804191229449_AddedTenantId1.cs" />
-    <Compile Include="Migrations\201804191229449_AddedTenantId1.Designer.cs">
-      <DependentUpon>201804191229449_AddedTenantId1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201804191259287_AddedMissingTenantId.cs" />
-    <Compile Include="Migrations\201804191259287_AddedMissingTenantId.Designer.cs">
-      <DependentUpon>201804191259287_AddedMissingTenantId.cs</DependentUpon>
+    <Compile Include="Migrations\201804230745230_AddedNotNullable.cs" />
+    <Compile Include="Migrations\201804230745230_AddedNotNullable.Designer.cs">
+      <DependentUpon>201804230745230_AddedNotNullable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Course.cs" />
@@ -514,20 +506,14 @@
     <EmbeddedResource Include="Migrations\201804061114059_dummy.resx">
       <DependentUpon>201804061114059_dummy.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804191103247_AddShardedKey.resx">
-      <DependentUpon>201804191103247_AddShardedKey.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201804200809459_AddedShardedKeys.resx">
+      <DependentUpon>201804200809459_AddedShardedKeys.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804191159527_ChangedPropertyName.resx">
-      <DependentUpon>201804191159527_ChangedPropertyName.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201804230730421_AddedMissingShardedkey.resx">
+      <DependentUpon>201804230730421_AddedMissingShardedkey.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804191226279_AddedTenantId.resx">
-      <DependentUpon>201804191226279_AddedTenantId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804191229449_AddedTenantId1.resx">
-      <DependentUpon>201804191229449_AddedTenantId1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804191259287_AddedMissingTenantId.resx">
-      <DependentUpon>201804191259287_AddedMissingTenantId.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201804230745230_AddedNotNullable.resx">
+      <DependentUpon>201804230745230_AddedNotNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

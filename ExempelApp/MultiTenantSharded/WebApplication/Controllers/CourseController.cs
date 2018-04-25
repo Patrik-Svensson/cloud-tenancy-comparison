@@ -17,11 +17,13 @@ namespace WebApplication.Controllers
     {
         private readonly SchoolContext db;
         private readonly ICache _cache;
+        private readonly ITenantIdProvider tenantId;
 
-        public CourseController(SchoolContext ctx, ICache cache)
+        public CourseController(SchoolContext ctx, ICache cache, ITenantIdProvider tenantId)
         {
             db = ctx;
             _cache = cache;
+            this.tenantId = tenantId;
         }
 
         // GET: Course
@@ -32,34 +34,33 @@ namespace WebApplication.Controllers
 
             int departmentID;
             IEnumerable<Course> courses;
-
-            var departments = db.Departments.OrderBy(q => q.Name).ToList();
+            int testA = Convert.ToInt32(tenantId.TenantId());
+            var departments = db.Departments.Where(x => x.TenantID == testA).OrderBy(q => q.Name).ToList();
             ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
             departmentID = SelectedDepartment.GetValueOrDefault();
-            courses = LoadCourses(SelectedDepartment, departmentID);
+            courses = LoadCourses(SelectedDepartment, departmentID, testA);
 
             return View(courses);
         }
 
-        private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
+        private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID, int tenantID)
         {
             string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
-            //ICache cache = new TenantCache(new QueryIdProvider());
 
             List<Course> result = (List<Course>)_cache.Get(cacheKey);
             if (result == null)
             {
-                result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
+                result = LoadCoursesFromDatabase(SelectedDepartment, departmentID, tenantID);
                 _cache.Set(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
             }
 
             return result;
         }
 
-        private List<Course> LoadCoursesFromDatabase(int? SelectedDepartment, int departmentID)
+        private List<Course> LoadCoursesFromDatabase(int? SelectedDepartment, int departmentID, int tenantID)
         {
             return db.Courses
-                .Where(c => !SelectedDepartment.HasValue || c.DepartmentID == departmentID)
+                .Where(c => (!SelectedDepartment.HasValue || c.DepartmentID == departmentID) && c.TenantID == tenantID)
                 .OrderBy(d => d.CourseID)
                 .Include(d => d.Department)
                 .ToList();
@@ -68,7 +69,6 @@ namespace WebApplication.Controllers
         // GET: Course/Details/5
         public ActionResult Details(int? id)
         {
-
             if (!initTenantContext())
                 return HttpNotFound();
 
@@ -85,7 +85,6 @@ namespace WebApplication.Controllers
 
             return View(course);
         }
-
 
         public ActionResult Create()
         {
@@ -130,6 +129,9 @@ namespace WebApplication.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            //TODO FIXA KONTROLL
+            //int testA = Convert.ToInt32(tenantId.TenantId());
+            //Course course = db.Courses.Where(x => x.TenantID == testA).Find(id);
             Course course = db.Courses.Find(id);
             if (course == null)
             {
