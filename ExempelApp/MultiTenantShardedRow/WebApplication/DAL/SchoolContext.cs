@@ -4,11 +4,15 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Web;
 using System.Diagnostics;
 using System;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace WebApplication.DAL
 {
     public class SchoolContext : DbContext
     {
+        private readonly ITenantIdProvider _tenantIdProvider;
+
         [Obsolete("Do not call this, it is used for Add-Migration support")]
         public SchoolContext()
             : this(GetConnectionString())
@@ -16,17 +20,52 @@ namespace WebApplication.DAL
 
         public SchoolContext(string connectionString)
             : base(connectionString)
+        { }
+        /*public SchoolContext(ISettingsProvider settingsProvider)
+            : this((settingsProvider.GetConnectionString()))
+        { }*/
+        
+        public SchoolContext(ISettingsProvider settingsProvider, ITenantIdProvider tenantIdProvider)
+        : this((settingsProvider.GetConnectionString()))
         {
+            this._tenantIdProvider = tenantIdProvider;
+            Database.Connection.StateChange += OnConnectionOpened;
 
         }
-        
-        public SchoolContext(ISettingsProvider settingsProvider)
-            : this((settingsProvider.GetConnectionString()))
-        { }
+
+
+        private void OnConnectionOpened(object sender, StateChangeEventArgs e)
+        {
+            if (e.CurrentState == ConnectionState.Open)
+            {
+                SetCompanyIdInSqlSession();
+            }
+
+
+            
+        }
+
+        private void SetCompanyIdInSqlSession()
+        {
+            
+
+           var sqlParameter = new SqlParameter("@UserId", "TenantID");
+           string tenID = _tenantIdProvider.TenantId();
+           Database.ExecuteSqlCommand(
+           sql: "EXECUTE AS USER = 'AppUser'; EXEC sp_set_session_context @key=N'UserId', @value="  + tenID, parameters: sqlParameter);
+
+           this.SaveChanges();
+
+            /*this.Database.ExecuteSqlCommand(
+            sql: "EXECUTE AS USER = 'AppUser'; EXEC sp_set_session_context @key=N'UserId', @value=" + tenID + ";", parameters: sqlParameter);
+            this.SaveChanges();*/
+        }
+
+
 
         private static string GetConnectionString()
         {
-            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSharded02;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSharded01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
 
         /*private static string GetConnectionString(ITenantIdProvider idProvider)
