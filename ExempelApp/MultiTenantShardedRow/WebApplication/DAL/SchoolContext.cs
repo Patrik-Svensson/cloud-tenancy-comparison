@@ -21,9 +21,6 @@ namespace WebApplication.DAL
         public SchoolContext(string connectionString)
             : base(connectionString)
         { }
-        /*public SchoolContext(ISettingsProvider settingsProvider)
-            : this((settingsProvider.GetConnectionString()))
-        { }*/
         
         public SchoolContext(ISettingsProvider settingsProvider, ITenantIdProvider tenantIdProvider)
         : this((settingsProvider.GetConnectionString()))
@@ -33,7 +30,6 @@ namespace WebApplication.DAL
             
         }
 
-
         private void OnConnectionOpened(object sender, StateChangeEventArgs e)
         {
             if (e.CurrentState == ConnectionState.Open)
@@ -41,33 +37,16 @@ namespace WebApplication.DAL
                 string id = _tenantIdProvider.TenantId();
                 var cmd = (sender as SqlConnection).CreateCommand();
                 cmd.CommandType = System.Data.CommandType.Text;
-                //cmd.CommandText = "exec sp_set_session_context 'TenantID', N'2'";
                 cmd.CommandText = "exec sp_set_session_context 'TenantID', N'" + id + "'";
                 cmd.ExecuteNonQuery();
-
-                //Får inte detta att fungera...
-                /*var sqlParameter = new SqlParameter("@TenantID", "TenantID");
-                this.Database.ExecuteSqlCommand(
-                    sql: "EXEC sp_set_session_context @key=N'TenantID', @value=0", parameters: sqlParameter);*/
             }
-
-
-
         }
-
-
 
         private static string GetConnectionString()
         {
             return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSharded01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
 
-        /*private static string GetConnectionString(ITenantIdProvider idProvider)
-        {
-            //return CatalogSettingsProvider.GetConnectionString();
-            //return (string)ConnectionStringProvider.connectionstringProvider.Get(idProvider);
-            return Common.ConnectionTenantDb.GetConnectionStringForTenant(idProvider.TenantId());
-        }*/
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
