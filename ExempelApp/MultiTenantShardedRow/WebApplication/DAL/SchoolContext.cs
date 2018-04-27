@@ -30,7 +30,7 @@ namespace WebApplication.DAL
         {
             this._tenantIdProvider = tenantIdProvider;
             Database.Connection.StateChange += OnConnectionOpened;
-
+            
         }
 
 
@@ -38,27 +38,21 @@ namespace WebApplication.DAL
         {
             if (e.CurrentState == ConnectionState.Open)
             {
-                SetCompanyIdInSqlSession();
+                string id = _tenantIdProvider.TenantId();
+                var cmd = (sender as SqlConnection).CreateCommand();
+                cmd.CommandType = System.Data.CommandType.Text;
+                //cmd.CommandText = "exec sp_set_session_context 'TenantID', N'2'";
+                cmd.CommandText = "exec sp_set_session_context 'TenantID', N'" + id + "'";
+                cmd.ExecuteNonQuery();
+
+                //Får inte detta att fungera...
+                /*var sqlParameter = new SqlParameter("@TenantID", "TenantID");
+                this.Database.ExecuteSqlCommand(
+                    sql: "EXEC sp_set_session_context @key=N'TenantID', @value=0", parameters: sqlParameter);*/
             }
 
 
-            
-        }
 
-        private void SetCompanyIdInSqlSession()
-        {
-            
-
-           var sqlParameter = new SqlParameter("@UserId", "TenantID");
-           string tenID = _tenantIdProvider.TenantId();
-           Database.ExecuteSqlCommand(
-           sql: "EXECUTE AS USER = 'AppUser'; EXEC sp_set_session_context @key=N'UserId', @value="  + tenID, parameters: sqlParameter);
-
-           this.SaveChanges();
-
-            /*this.Database.ExecuteSqlCommand(
-            sql: "EXECUTE AS USER = 'AppUser'; EXEC sp_set_session_context @key=N'UserId', @value=" + tenID + ";", parameters: sqlParameter);
-            this.SaveChanges();*/
         }
 
 

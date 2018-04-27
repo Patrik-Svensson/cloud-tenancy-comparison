@@ -108,3 +108,4 @@ ehthumbs.db
 *.lock.json
 *.nuget.targets
 
+/ExempelApp/MultiTenantShardedRowNew

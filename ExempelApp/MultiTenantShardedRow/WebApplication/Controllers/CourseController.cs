@@ -35,8 +35,7 @@ namespace WebApplication.Controllers
             int departmentID;
             IEnumerable<Course> courses;
 
-            //ADDED SHOULD PROBABLY NOT BE HERE
-            //db.Database.Initialize(force: true);
+               
             var departments = db.Departments.OrderBy(q => q.Name).ToList();
             ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
             departmentID = SelectedDepartment.GetValueOrDefault();
@@ -61,7 +60,8 @@ namespace WebApplication.Controllers
 
         private List<Course> LoadCoursesFromDatabase(int? SelectedDepartment, int departmentID)
         {
-           return db.Courses
+
+            return db.Courses
                 .Where(c => !SelectedDepartment.HasValue || c.DepartmentID == departmentID)
                 .OrderBy(d => d.CourseID)
                 .Include(d => d.Department)
