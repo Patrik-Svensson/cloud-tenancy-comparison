@@ -7,7 +7,7 @@ namespace WebApplication
 {
     public class QueryIdProvider : ITenantIdProvider
     {
-        private string _tenantId;
+        private static string _tenantId;
 
         public QueryIdProvider()
         {   
@@ -17,12 +17,15 @@ namespace WebApplication
         {
             _tenantId = HttpContext.Current.Request.QueryString.Get("TenantId");
 
-            //FOR TESTING
+            //FOR TESTING, Saving old tenant id in case of pressing button or other stuff
             if(_tenantId == null)
             {
-                return "1";
+            
+                _tenantId = "1";
+                return _tenantId;
             }
-          
+
+
             return _tenantId;
         }
     }

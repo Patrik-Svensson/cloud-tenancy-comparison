@@ -6,9 +6,10 @@
 
 <h2>Courses</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
 
 @using (Html.BeginForm())
 {
@@ -51,9 +52,9 @@
                 @Html.DisplayFor(modelItem => item.Department.Name)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.CourseID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.CourseID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.CourseID })
+                @Html.ActionLink("Edit", "Edit", new { id = item.CourseID, tenantID = item.TenantID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.CourseID, tenantID = item.TenantID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.CourseID, tenantID = item.TenantID })
             </td>
         </tr>
     }

@@ -27,10 +27,9 @@ namespace WebApplication.Controllers
         }
 
         // GET: Course
-        public ActionResult Index(int? SelectedDepartment)
+        public ActionResult Index(int? SelectedDepartment, int? tenantID)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
+            
 
             int departmentID;
             IEnumerable<Course> courses;
@@ -69,10 +68,9 @@ namespace WebApplication.Controllers
         }
 
         // GET: Course/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int? id, int? tenantID)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
+           
 
             if (id == null)
             {
@@ -88,10 +86,8 @@ namespace WebApplication.Controllers
             return View(course);
         }
 
-        public ActionResult Create()
+        public ActionResult Create(int? tenantID)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
 
             PopulateDepartmentsDropDownList();
             return View();
@@ -101,8 +97,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")]Course course)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
+           
 
             try
             {
@@ -122,10 +117,8 @@ namespace WebApplication.Controllers
             return View(course);
         }
 
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int? id, int? tenantID)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
 
             if (id == null)
             {
@@ -143,10 +136,9 @@ namespace WebApplication.Controllers
 
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult EditPost(int? id, int? tenantID)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
+          
 
             if (id == null)
             {
@@ -160,7 +152,7 @@ namespace WebApplication.Controllers
                 {
                     db.SaveChanges();
 
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new {tenantID});
                 }
                 catch (RetryLimitExceededException /* dex */)
                 {
@@ -182,10 +174,9 @@ namespace WebApplication.Controllers
 
 
         // GET: Course/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, int? tenantID)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
+            
 
             if (id == null)
             {
@@ -204,8 +195,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
+            
 
             Course course = db.Courses.Find(id);
             db.Courses.Remove(course);
@@ -221,9 +211,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public ActionResult UpdateCourseCredits(int? multiplier)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+           
             if (multiplier != null)
             {
                 ViewBag.RowsAffected = db.Database.ExecuteSqlCommand("UPDATE Course SET Credits = Credits * {0}", multiplier);
@@ -240,9 +228,6 @@ namespace WebApplication.Controllers
             base.Dispose(disposing);
         }
 
-        private bool initTenantContext()
-        {
-            return true;
-        }
+
     }
 }
