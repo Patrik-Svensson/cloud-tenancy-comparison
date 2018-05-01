@@ -56,7 +56,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index", new {tenantID = Model.TenantID})
+    @Html.ActionLink("Back to List", "Index", new { tenantID = Context.Request.QueryString["TenantId"] })
 </div>
 
 @section Scripts {
