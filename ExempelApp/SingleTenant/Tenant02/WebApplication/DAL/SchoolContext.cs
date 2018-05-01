@@ -9,18 +9,18 @@ namespace WebApplication.DAL
     public class SchoolContext : DbContext
     {
         public SchoolContext()
-            : this(GetConnectionString())
+            : this("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSingle02;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;")
         {
 
         }
 
         public SchoolContext(string connectionString)
-            : base(connectionString) // Tar connection strign från web.config
+            : base(connectionString)
         {}
 
         private static string GetConnectionString()
         {
-            return Common.ConnectionTenantDb.GetConnectionString();
+            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSingle02;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
 
         public DbSet<Course> Courses { get; set; }
