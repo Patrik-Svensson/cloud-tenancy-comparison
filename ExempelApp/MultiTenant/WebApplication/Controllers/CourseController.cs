@@ -89,7 +89,7 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")]Course course)
+        public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")]Course course, int? tenantId)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             try
@@ -98,7 +98,11 @@ namespace WebApplication.Controllers
                 {
                     db.Courses.Add(course);
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+
+                    // Bon Voyage Avec Le Cache!
+                    _cache.Invalidate();
+
+                    return RedirectToAction("Index", new { TenantId = tenantId });
                 }
             }
             catch (RetryLimitExceededException /* dex */)
@@ -128,7 +132,7 @@ namespace WebApplication.Controllers
 
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult EditPost(int? id, int? tenantId)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
@@ -143,7 +147,10 @@ namespace WebApplication.Controllers
                 {
                     db.SaveChanges();
 
-                    return RedirectToAction("Index");
+                    // Bon Voyage Avec Le Cache!
+                    _cache.Invalidate();
+
+                    return RedirectToAction("Index", new { TenantId = tenantId });
                 }
                 catch (RetryLimitExceededException /* dex */)
                 {
@@ -183,13 +190,17 @@ namespace WebApplication.Controllers
         // POST: Course/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id, int? tenantId)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             Course course = db.Courses.Find(id);
             db.Courses.Remove(course);
             db.SaveChanges();
-            return RedirectToAction("Index");
+
+            // Bon Voyage Avec Le Cache!
+            _cache.Invalidate();
+
+            return RedirectToAction("Index", new { TenantId = tenantId });
         }
 
         public ActionResult UpdateCourseCredits()

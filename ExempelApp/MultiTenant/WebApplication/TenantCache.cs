@@ -32,4 +32,10 @@ public class TenantCache : ICache
         string tenantKey = String.Concat(key, _tenantIdProvider.TenantId());
         return memoryCache.Get(tenantKey);
     }
+
+    public void Invalidate()
+    {
+        string key = String.Concat($"CourseController.LoadCourses(,0)", _tenantIdProvider.TenantId());
+        memoryCache.Remove(key);
+    }
 }
