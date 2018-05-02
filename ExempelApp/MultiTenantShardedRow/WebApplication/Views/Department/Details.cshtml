@@ -44,6 +44,6 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.DepartmentID }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Edit", "Edit", new { id = Model.DepartmentID, tenantId = Context.Request.QueryString["TenantId"] }) |
+    @Html.ActionLink("Back to List", "Index", new { tenantId = Context.Request.QueryString["TenantId"] })
 </p>

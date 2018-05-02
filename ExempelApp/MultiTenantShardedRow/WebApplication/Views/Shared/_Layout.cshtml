@@ -28,7 +28,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <!-- System.Configuration.ConfigurationManager.AppSettings["ApplicationName"] är koden som behöver bytas ut -->
-                @Html.ActionLink(System.Configuration.ConfigurationManager.AppSettings["ApplicationName"], "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink((string)ViewBag.KUNDNAMN, "Index", "Home", new { area = "", tenantId = Context.Request.QueryString["tenantId"] }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">

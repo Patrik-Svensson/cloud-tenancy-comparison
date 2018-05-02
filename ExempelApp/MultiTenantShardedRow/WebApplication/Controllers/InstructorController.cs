@@ -17,18 +17,18 @@ namespace WebApplication.Controllers
     {
         private readonly SchoolContext db;
         private QueryIdProvider provider = new QueryIdProvider();
+        private readonly ISettingsProvider _CatalogProvider;
 
-        public InstructorController(SchoolContext db)
+        public InstructorController(SchoolContext db, ISettingsProvider _catalogProvider)
         {
             this.db = db;
+            _CatalogProvider = _catalogProvider;
         }
 
         // GET: Instructor
-        public ActionResult Index(int? id, int? courseID)
+        public ActionResult Index(int? id, int? courseID, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             var viewModel = new InstructorIndexData();
 
             viewModel.Instructors = db.Instructors
@@ -65,11 +65,9 @@ namespace WebApplication.Controllers
 
 
         // GET: Instructor/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int? id, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -84,9 +82,6 @@ namespace WebApplication.Controllers
 
         public ActionResult Create()
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
             var instructor = new Instructor();
             instructor.Courses = new List<Course>();
             PopulateAssignedCourseData(instructor);
@@ -95,11 +90,9 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "LastName,FirstMidName,HireDate,OfficeAssignment")]Instructor instructor, string[] selectedCourses)
+        public ActionResult Create([Bind(Include = "LastName,FirstMidName,HireDate,OfficeAssignment")]Instructor instructor, string[] selectedCourses, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (selectedCourses != null)
             {
                 instructor.Courses = new List<Course>();
@@ -121,11 +114,9 @@ namespace WebApplication.Controllers
 
 
         // GET: Instructor/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int? id, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -164,11 +155,9 @@ namespace WebApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int? id, string[] selectedCourses)
+        public ActionResult Edit(int? id, string[] selectedCourses, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -234,14 +223,10 @@ namespace WebApplication.Controllers
             }
         }
 
-
-
         // GET: Instructor/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -257,11 +242,9 @@ namespace WebApplication.Controllers
         // POST: Instructor/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             Instructor instructor = db.Instructors
               .Include(i => i.OfficeAssignment)
               .Where(i => i.ID == id)
@@ -288,10 +271,6 @@ namespace WebApplication.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-        private bool initTenantContext()
-        {
-            return true;
         }
     }
 }

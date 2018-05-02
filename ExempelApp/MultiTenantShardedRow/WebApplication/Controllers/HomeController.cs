@@ -15,26 +15,23 @@ namespace WebApplication.Controllers
         private readonly ISettingsProvider _CatalogProvider;
         private QueryIdProvider provider = new QueryIdProvider();
 
-        public HomeController(SchoolContext db, ITenantIdProvider idProvider,ISettingsProvider _catalogProvider)
+        public HomeController(SchoolContext db, ITenantIdProvider idProvider, ISettingsProvider _catalogProvider)
         {
             this.db = db;
             this._idProvider = idProvider;
             _CatalogProvider = _catalogProvider;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int? tenantId)
         {
-            // TODO: Lagra per tenant setting 
-            // ViewBag.KUNDNAMN = System.Configuration.ConfigurationManager.AppSettings["ApplicationName"];
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
 
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult About(int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             // Commenting out LINQ to show how to do the same thing in SQL.
             //IQueryable<EnrollmentDateGroup> = from student in db.Students
             //           group student by student.EnrollmentDate into dateGroup
@@ -53,8 +50,10 @@ namespace WebApplication.Controllers
 
             return View(data.ToList());
         }
-        public ActionResult Contact()
+
+        public ActionResult Contact(int? tenantId)
         {
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             ViewBag.Message = "Your contact page.";
 
             return View();
@@ -67,10 +66,6 @@ namespace WebApplication.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-        private bool initTenantContext()
-        { 
-            return true;
         }
     }
 }

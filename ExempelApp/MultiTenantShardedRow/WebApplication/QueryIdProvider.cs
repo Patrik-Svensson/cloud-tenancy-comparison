@@ -17,7 +17,6 @@ namespace WebApplication
         {
             _tenantId = HttpContext.Current.Request.QueryString.Get("TenantId");
 
-            //FOR TESTING, Saving old tenant id in case of pressing button or other stuff
             if(_tenantId == null)
             {
             
