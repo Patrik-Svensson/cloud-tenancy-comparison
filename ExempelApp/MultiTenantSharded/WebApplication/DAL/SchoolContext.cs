@@ -26,15 +26,9 @@ namespace WebApplication.DAL
 
         private static string GetConnectionString()
         {
-            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSharded02;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbMulti01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
 
-        /*private static string GetConnectionString(ITenantIdProvider idProvider)
-        {
-            //return CatalogSettingsProvider.GetConnectionString();
-            //return (string)ConnectionStringProvider.connectionstringProvider.Get(idProvider);
-            return Common.ConnectionTenantDb.GetConnectionStringForTenant(idProvider.TenantId());
-        }*/
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
