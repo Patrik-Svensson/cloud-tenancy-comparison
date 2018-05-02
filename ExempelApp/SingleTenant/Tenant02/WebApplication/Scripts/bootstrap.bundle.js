@@ -4685,7 +4685,8 @@ var Modal = function ($$$1) {
       }
     }; // ----------------------------------------------------------------------
     // the following methods are used to handle overflowing modals
-    // todo (fat): these should probably be refactored out of modal.js
+          // 
+          (fat): these should probably be refactored out of modal.js
     // ----------------------------------------------------------------------
 
 

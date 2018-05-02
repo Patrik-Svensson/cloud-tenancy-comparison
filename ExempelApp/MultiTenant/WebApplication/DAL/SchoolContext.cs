@@ -1,9 +1,6 @@
 ﻿using WebApplication.Models;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Web;
-using System.Diagnostics;
-using System;
 
 namespace WebApplication.DAL
 {
@@ -15,12 +12,7 @@ namespace WebApplication.DAL
 
         public SchoolContext(string connectionString)
             : base(connectionString)
-        {
-
-        }
-        /*public SchoolContext(ITenantIdProvider tenantIdProvider)
-            : this(GetConnectionString(tenantIdProvider))
-        { }*/
+        { }
         
         public SchoolContext(ISettingsProvider settingsProvider)
             : this((settingsProvider.GetConnectionString()))
@@ -28,15 +20,9 @@ namespace WebApplication.DAL
 
         private static string GetConnectionString()
         {
-            return Common.ConnectionTenantDb.GetConnectionString();
+            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbMulti02;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
 
-        /*private static string GetConnectionString(ITenantIdProvider idProvider)
-        {
-            //return CatalogSettingsProvider.GetConnectionString();
-            //return (string)ConnectionStringProvider.connectionstringProvider.Get(idProvider);
-            return Common.ConnectionTenantDb.GetConnectionStringForTenant(idProvider.TenantId());
-        }*/
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }

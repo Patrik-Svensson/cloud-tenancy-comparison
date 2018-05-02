@@ -24,8 +24,6 @@ namespace WebApplication.Controllers
 
         public ActionResult Index()
         {
-            // TODO: Lagra per tenant setting 
-            // ViewBag.KUNDNAMN = System.Configuration.ConfigurationManager.AppSettings["ApplicationName"];
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
 
             return View();
@@ -33,8 +31,7 @@ namespace WebApplication.Controllers
 
         public ActionResult About()
         {
-            if (!initTenantContext())
-                return HttpNotFound();
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             // Commenting out LINQ to show how to do the same thing in SQL.
             //IQueryable<EnrollmentDateGroup> = from student in db.Students
             //           group student by student.EnrollmentDate into dateGroup
@@ -53,8 +50,10 @@ namespace WebApplication.Controllers
 
             return View(data.ToList());
         }
+
         public ActionResult Contact()
         {
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             ViewBag.Message = "Your contact page.";
 
             return View();
@@ -65,10 +64,6 @@ namespace WebApplication.Controllers
             if(db != null)
                 db.Dispose();
             base.Dispose(disposing);
-        }
-        private bool initTenantContext()
-        { 
-            return true;
         }
     }
 }

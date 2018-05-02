@@ -7,7 +7,7 @@
 <h2>Instructors</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", new { tenantId = Context.Request.QueryString["tenantId"] })
 </p>
 <table class="table">
     <tr>
@@ -52,10 +52,10 @@
             </td>
 
             <td>
-                @Html.ActionLink("Select", "Index", new { id = item.ID }) |
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @Html.ActionLink("Select", "Index", new { id = item.ID, tenantId = Context.Request.QueryString["tenantId"] }) |
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID, tenantId = Context.Request.QueryString["tenantId"] }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID, tenantId = Context.Request.QueryString["tenantId"] }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID, tenantId = Context.Request.QueryString["tenantId"] })
             </td>
         </tr>
     }

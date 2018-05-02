@@ -10,15 +10,12 @@ namespace WebApplication
         private string _tenantId;
 
         public QueryIdProvider()
-        {
-           
-        }
+        { }
 
         public string TenantId()
         {
             _tenantId = HttpContext.Current.Request.QueryString.Get("TenantId");
 
-            //FOR TESTING
             if(_tenantId == null)
             {
                 return "1";

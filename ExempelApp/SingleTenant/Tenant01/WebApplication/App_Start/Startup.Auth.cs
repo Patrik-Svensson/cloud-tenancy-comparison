@@ -64,9 +64,6 @@ namespace WebApplication
                         {
                             ValidAudience = ConfigurationManager.AppSettings["ida:Audience"],
 
-                            // TODO: Look into making this multitenant
-                            // Valid Issers should be saved per tenant
-                            //
                             // Special issuer validation
                             // The issuer field contains a unique guid of the Azure Ad instance which
                             // granted access.

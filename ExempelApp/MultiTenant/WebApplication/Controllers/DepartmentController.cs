@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication.DAL;
 using WebApplication.Models;
@@ -17,28 +15,26 @@ namespace WebApplication.Controllers
     {
         private readonly SchoolContext db;
         private QueryIdProvider provider = new QueryIdProvider();
+        private readonly ISettingsProvider _CatalogProvider;
 
-        public DepartmentController(SchoolContext db)
+        public DepartmentController(SchoolContext db, ISettingsProvider _catalogProvider)
         {
             this.db = db;
+            _CatalogProvider = _catalogProvider;
         }
 
         // GET: Department
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             var departments = db.Departments.Include(d => d.Administrator);
             return View(await departments.ToListAsync());
         }
 
         // GET: Department/Details/5
-        public async Task<ActionResult> Details(int? id)
+        public async Task<ActionResult> Details(int? id, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -59,11 +55,9 @@ namespace WebApplication.Controllers
         }
 
         // GET: Department/Create
-        public ActionResult Create()
+        public ActionResult Create(int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             ViewBag.InstructorID = new SelectList(db.Instructors, "ID", "FullName");
             return View();
         }
@@ -73,11 +67,9 @@ namespace WebApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "DepartmentID,Name,Budget,StartDate,InstructorID")] Department department)
+        public async Task<ActionResult> Create([Bind(Include = "DepartmentID,Name,Budget,StartDate,InstructorID")] Department department, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (ModelState.IsValid)
             {
                 db.Departments.Add(department);
@@ -90,11 +82,9 @@ namespace WebApplication.Controllers
         }
 
         // GET: Department/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<ActionResult> Edit(int? id, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -113,11 +103,9 @@ namespace WebApplication.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int? id, byte[] rowVersion)
+        public async Task<ActionResult> Edit(int? id, byte[] rowVersion, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             string[] fieldsToBind = new string[] { "Name", "Budget", "StartDate", "InstructorID", "RowVersion" };
 
             if (id == null)
@@ -190,11 +178,9 @@ namespace WebApplication.Controllers
         }
 
         // GET: Department/Delete/5
-        public async Task<ActionResult> Delete(int? id, bool? concurrencyError)
+        public async Task<ActionResult> Delete(int? id, bool? concurrencyError, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -225,11 +211,9 @@ namespace WebApplication.Controllers
         // POST: Department/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(Department department)
+        public async Task<ActionResult> Delete(Department department, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             try
             {
                 db.Entry(department).State = EntityState.Deleted;
@@ -247,8 +231,7 @@ namespace WebApplication.Controllers
                 return View(department);
             }
         }
-
-
+        
         protected override void Dispose(bool disposing)
         {
             if (db != null)
@@ -256,11 +239,6 @@ namespace WebApplication.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool initTenantContext()
-        {
-            return true;
         }
     }
 }

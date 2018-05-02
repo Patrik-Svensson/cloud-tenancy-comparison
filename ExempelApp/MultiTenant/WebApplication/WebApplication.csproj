@@ -286,7 +286,6 @@
     <Compile Include="DAL\SchoolContext.cs" />
     <Compile Include="DAL\SchoolInitializer.cs" />
     <Compile Include="DAL\SchoolInterceptorLogging.cs" />
-    <Compile Include="DAL\Tenant.cs" />
     <Compile Include="ErrorHandler\AiHandleErrorAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -321,6 +320,10 @@
     <Compile Include="Migrations\201804061114059_dummy.cs" />
     <Compile Include="Migrations\201804061114059_dummy.Designer.cs">
       <DependentUpon>201804061114059_dummy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805011603513_ResolveIncompatibility.cs" />
+    <Compile Include="Migrations\201805011603513_ResolveIncompatibility.Designer.cs">
+      <DependentUpon>201805011603513_ResolveIncompatibility.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Course.cs" />
@@ -493,6 +496,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804061114059_dummy.resx">
       <DependentUpon>201804061114059_dummy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805011603513_ResolveIncompatibility.resx">
+      <DependentUpon>201805011603513_ResolveIncompatibility.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

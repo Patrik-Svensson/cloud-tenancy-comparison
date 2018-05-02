@@ -4,7 +4,7 @@
 }
 <h2>Departments</h2>
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", new { tenantId = Context.Request.QueryString["tenantId"] })
 </p>
 <table class="table">
     <tr>
@@ -38,9 +38,9 @@
                 @Html.DisplayFor(modelItem => item.Administrator.FullName)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.DepartmentID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.DepartmentID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.DepartmentID })
+                @Html.ActionLink("Edit", "Edit", new { id = item.DepartmentID, tenantId = Context.Request.QueryString["tenantId"] }) |
+                @Html.ActionLink("Details", "Details", new { id = item.DepartmentID, tenantId = Context.Request.QueryString["tenantId"] }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.DepartmentID, tenantId = Context.Request.QueryString["tenantId"] })
             </td>
         </tr>
     }

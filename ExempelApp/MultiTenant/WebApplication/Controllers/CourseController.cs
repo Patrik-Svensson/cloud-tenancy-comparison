@@ -4,12 +4,10 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication.DAL;
 using WebApplication.Models;
 using System.Data.Entity.Infrastructure;
-using System.Runtime.Caching;
 
 namespace WebApplication.Controllers
 {
@@ -17,19 +15,19 @@ namespace WebApplication.Controllers
     {
         private readonly SchoolContext db;
         private readonly ICache _cache;
+        private readonly ISettingsProvider _CatalogProvider;
 
-        public CourseController(SchoolContext ctx, ICache cache)
+        public CourseController(SchoolContext ctx, ICache cache, ISettingsProvider _catalogProvider)
         {
             db = ctx;
             _cache = cache;
+            _CatalogProvider = _catalogProvider;
         }
 
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             int departmentID;
             IEnumerable<Course> courses;
 
@@ -44,7 +42,6 @@ namespace WebApplication.Controllers
         private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
         {
             string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
-            //ICache cache = new TenantCache(new QueryIdProvider());
 
             List<Course> result = (List<Course>)_cache.Get(cacheKey);
             if (result == null)
@@ -66,12 +63,9 @@ namespace WebApplication.Controllers
         }
 
         // GET: Course/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int? id, int? tenantId)
         {
-
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -86,12 +80,9 @@ namespace WebApplication.Controllers
             return View(course);
         }
 
-
         public ActionResult Create()
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             PopulateDepartmentsDropDownList();
             return View();
         }
@@ -100,9 +91,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")]Course course)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             try
             {
                 if (ModelState.IsValid)
@@ -121,11 +110,9 @@ namespace WebApplication.Controllers
             return View(course);
         }
 
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int? id, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -143,9 +130,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditPost(int? id)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -180,11 +165,9 @@ namespace WebApplication.Controllers
 
 
         // GET: Course/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, int? tenantId)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -202,9 +185,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             Course course = db.Courses.Find(id);
             db.Courses.Remove(course);
             db.SaveChanges();
@@ -219,9 +200,7 @@ namespace WebApplication.Controllers
         [HttpPost]
         public ActionResult UpdateCourseCredits(int? multiplier)
         {
-            if (!initTenantContext())
-                return HttpNotFound();
-
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (multiplier != null)
             {
                 ViewBag.RowsAffected = db.Database.ExecuteSqlCommand("UPDATE Course SET Credits = Credits * {0}", multiplier);
@@ -236,11 +215,6 @@ namespace WebApplication.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool initTenantContext()
-        {
-            return true;
         }
     }
 }

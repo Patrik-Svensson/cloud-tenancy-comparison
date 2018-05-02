@@ -27,8 +27,6 @@ namespace WebApplication.Controllers
             return View(courses);
         }
 
-        // TODO: Find solution for tenant aware caching
-
         private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
         {
             // Check for object in cache, if it is 

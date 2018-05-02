@@ -11,7 +11,7 @@ namespace Common
 {
     public class ConnectionTenantDb
     {
-        // ConnectionString till Catalog
+        // ConnectionString to Catalog
         private static SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=Catalog;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30");
 
         public static string GetConnectionString()
@@ -19,7 +19,7 @@ namespace Common
             string tenantId;
             string connectionString = null;
 
-            // HttpContext.Current är null när man kör migrations
+            // HttpContext.Current is null when a migration is run
             if (HttpContext.Current != null)
             {
                 var httpRequst = HttpContext.Current.Request;
@@ -32,11 +32,7 @@ namespace Common
                 // Running Update-Database or similar
                 connectionString = "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=Exjobb2;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             }
-            // TODO: Returnera rätt connectionstring beroende på tenant
-            // 1. Få det att köras korrekt
-            // 2. Se över hur det ska lagras för många tenants. Ska ej vara hårdkodat!
-
-            //return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=Exjobb1;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=10;";
+            
             return connectionString;
         }
 

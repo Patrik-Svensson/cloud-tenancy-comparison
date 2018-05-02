@@ -29,8 +29,6 @@ namespace MigrateDatabase
             var dbMigrations = migrator.GetDatabaseMigrations();
             var m = migrator.GetLocalMigrations();
 
-            //var logger = new System.Data.Entity.Infrastructure.Interception.DatabaseLogger();
-
             // Run migrations (and possibly seed)
             migrator.Update();
         }
