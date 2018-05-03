@@ -102,7 +102,11 @@ namespace WebApplication.Controllers
                 {
                     db.Courses.Add(course);
                     db.SaveChanges();
-                    return RedirectToAction("Index", new { tenantId });
+
+                    // Bon Voyage Avec Le Cache!
+                    _cache.Invalidate();
+                    
+                    return RedirectToAction("Index", new { TenantId = tenantId });
                 }
             }
             catch (RetryLimitExceededException /* dex */)
@@ -148,7 +152,10 @@ namespace WebApplication.Controllers
                 {
                     db.SaveChanges();
 
-                    return RedirectToAction("Index", new {tenantId});
+                    // Bon Voyage Avec Le Cache!
+                    _cache.Invalidate();
+
+                    return RedirectToAction("Index", new { TenantId = tenantId });
                 }
                 catch (RetryLimitExceededException /* dex */)
                 {
@@ -194,7 +201,11 @@ namespace WebApplication.Controllers
             Course course = db.Courses.Find(id);
             db.Courses.Remove(course);
             db.SaveChanges();
-            return RedirectToAction("Index");
+
+            // Bon Voyage Avec Le Cache!
+            _cache.Invalidate();
+
+            return RedirectToAction("Index", new { TenantId = tenantID });
         }
 
         public ActionResult UpdateCourseCredits()
