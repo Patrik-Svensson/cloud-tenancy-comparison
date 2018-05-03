@@ -3,17 +3,18 @@ using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Web;
 using System.Diagnostics;
+using System.Configuration;
 
 namespace WebApplication.DAL
 {
     public class SchoolContext : DbContext
     {
         public SchoolContext()
-            : this("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSingle01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;")
+            : this(ConfigurationManager.ConnectionStrings["SchoolContext"].ConnectionString)
         {}
 
         public SchoolContext(string connectionString)
-            : base("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSingle01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;")
+            : base(ConfigurationManager.ConnectionStrings["SchoolContext"].ConnectionString)
         {}
 
         public DbSet<Course> Courses { get; set; }
