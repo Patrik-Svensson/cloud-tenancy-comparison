@@ -11,9 +11,6 @@ namespace Common
 {
     public class ConnectionTenantDb
     {
-        // ConnectionString to Catalog
-        private static SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogMulti;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-
         public static string GetConnectionString()
         {
             string tenantId;
@@ -46,6 +43,7 @@ namespace Common
         public static string GetConnectionStringForTenant(string tenantId)
         {
             string connectionStringTenant = null;
+            SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogMulti;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
 
             try
             {
@@ -62,11 +60,14 @@ namespace Common
                 catalogDbConnection.Close();
             }
 
+         //   if (connectionStringTenant == null)
+         //       connectionStringTenant = "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbMulti01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             return connectionStringTenant;
         }
 
         public static string GetDisplayNameForTenant(string tenantId)
         {
+            SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogMulti;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
 
             string displayName = null;
 
@@ -84,6 +85,8 @@ namespace Common
             {
                 catalogDbConnection.Close();
             }
+         //   if (displayName == null)
+         //       displayName = "Freddys Magväskor";
 
             return displayName;  
         }

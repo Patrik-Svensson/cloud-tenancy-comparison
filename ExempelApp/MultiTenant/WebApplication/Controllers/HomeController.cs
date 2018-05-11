@@ -13,7 +13,6 @@ namespace WebApplication.Controllers
         private readonly SchoolContext db;
         private readonly ITenantIdProvider _idProvider;
         private readonly ISettingsProvider _CatalogProvider;
-        private QueryIdProvider provider = new QueryIdProvider();
 
         public HomeController(SchoolContext db, ITenantIdProvider idProvider,ISettingsProvider _catalogProvider)
         {
@@ -21,6 +20,8 @@ namespace WebApplication.Controllers
             this._idProvider = idProvider;
             _CatalogProvider = _catalogProvider;
         }
+
+
 
         public ActionResult Index()
         {
