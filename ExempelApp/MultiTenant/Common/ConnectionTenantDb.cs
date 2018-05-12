@@ -13,6 +13,7 @@ namespace Common
     public class ConnectionTenantDb
     {
         private static readonly MemoryCache cache = new MemoryCache("ConnectionString");
+        private static readonly MemoryCache cache_2 = new MemoryCache("Displayname");
         public static string GetConnectionString()
         {
             string tenantId;
@@ -75,7 +76,7 @@ namespace Common
         {
             SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogMulti;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             string displayName = null;
-            string result = (string)cache.Get(tenantId);
+            string result = (string)cache_2.Get(tenantId);
             if (result != null)
                 return result;
 
@@ -85,7 +86,7 @@ namespace Common
                 SqlCommand command = new SqlCommand("SELECT DisplayName FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
                 displayName = (string)command.ExecuteScalar();
                 if (displayName != null)
-                    cache.Set(tenantId, displayName, DateTimeOffset.Now.AddMinutes(1));
+                    cache_2.Set(tenantId, displayName, DateTimeOffset.Now.AddMinutes(1));
             }
             catch (Exception e)
             {
