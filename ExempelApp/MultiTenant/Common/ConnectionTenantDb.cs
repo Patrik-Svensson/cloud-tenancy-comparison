@@ -6,11 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Data.SqlClient;
+using System.Runtime.Caching;
 
 namespace Common
 {
     public class ConnectionTenantDb
     {
+        private static readonly MemoryCache cache = new MemoryCache("ConnectionString");
         public static string GetConnectionString()
         {
             string tenantId;
@@ -43,13 +45,19 @@ namespace Common
         public static string GetConnectionStringForTenant(string tenantId)
         {
             string connectionStringTenant = null;
+
             SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogMulti;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            string result = (string)cache.Get(tenantId);
+            if (result != null)
+                return result;
 
             try
             {
                 catalogDbConnection.Open();
                 SqlCommand command = new SqlCommand("SELECT Connection FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
                 connectionStringTenant = (string)command.ExecuteScalar();
+                if(connectionStringTenant != null)
+                    cache.Set(tenantId, connectionStringTenant, DateTimeOffset.Now.AddMinutes(1));
             }
             catch (Exception e)
             {
@@ -60,22 +68,24 @@ namespace Common
                 catalogDbConnection.Close();
             }
 
-         //   if (connectionStringTenant == null)
-         //       connectionStringTenant = "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbMulti01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             return connectionStringTenant;
         }
 
         public static string GetDisplayNameForTenant(string tenantId)
         {
             SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogMulti;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-
             string displayName = null;
+            string result = (string)cache.Get(tenantId);
+            if (result != null)
+                return result;
 
             try
             {
                 catalogDbConnection.Open();
                 SqlCommand command = new SqlCommand("SELECT DisplayName FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
-                displayName = (string)command.ExecuteScalar(); 
+                displayName = (string)command.ExecuteScalar();
+                if (displayName != null)
+                    cache.Set(tenantId, displayName, DateTimeOffset.Now.AddMinutes(1));
             }
             catch (Exception e)
             {
@@ -85,8 +95,6 @@ namespace Common
             {
                 catalogDbConnection.Close();
             }
-         //   if (displayName == null)
-         //       displayName = "Freddys Magväskor";
 
             return displayName;  
         }
