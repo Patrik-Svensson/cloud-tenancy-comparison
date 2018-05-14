@@ -19,6 +19,7 @@ namespace WebApplication.Controllers
         private readonly ICache _cache;
         private readonly ISettingsProvider _CatalogProvider;
         private readonly ITenantIdProvider _tenantId;
+        public static int[,] arr = new int[5000, 5000];
 
         public CourseController(SchoolContext ctx, ICache cache, ITenantIdProvider tenantId, ISettingsProvider _catalogProvider)
         {
