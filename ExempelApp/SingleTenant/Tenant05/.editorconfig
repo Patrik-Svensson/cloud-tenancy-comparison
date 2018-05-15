@@ -1,0 +1,11 @@
+root = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+
+; Devexpress themes uses default style with 4 spaces
+; make sure that we use the same to allow diffs and upgrades
+[*.xaml]
+indent_style = space
+indent_size = 4

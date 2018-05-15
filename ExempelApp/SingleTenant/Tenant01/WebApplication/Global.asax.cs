@@ -13,9 +13,13 @@ namespace WebApplication
 {
 	public class WebApiApplication : System.Web.HttpApplication
 	{
-		protected void Application_Start()
+        // Dummy array to increase memory usage
+        public static int[] dummy1 = new int[1000 * 1000 * 10];
+        protected void Application_Start()
 		{
-			AreaRegistration.RegisterAllAreas();
+            for (int i = 0; i < dummy1.Length; i++)
+                dummy1[i] = i;
+            AreaRegistration.RegisterAllAreas();
 			GlobalConfiguration.Configure(WebApiConfig.Register);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);

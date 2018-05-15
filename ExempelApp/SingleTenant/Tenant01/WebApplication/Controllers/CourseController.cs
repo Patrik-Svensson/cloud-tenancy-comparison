@@ -14,7 +14,8 @@ using System.Runtime.Caching;
 namespace WebApplication.Controllers
 {
     public class CourseController : Controller
-    {
+    { 
+        private readonly bool isCaching = true;
         private SchoolContext db = new SchoolContext();
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
@@ -29,18 +30,26 @@ namespace WebApplication.Controllers
 
         private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
         {
+            List<Course> result;
             // Check for object in cache, if it is 
             // Here the default memory cache is used directly
-            var cache = MemoryCache.Default;
-            string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
+            if (isCaching)
+            {
+                var cache = MemoryCache.Default;
+                string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
 
-            List<Course> result = (List<Course>)cache.Get(cacheKey);
-            if (result == null)
+                result = (List<Course>)cache.Get(cacheKey);
+                if (result == null)
+                {
+                    result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
+
+                    // Cache for 
+                    cache.Add(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
+                }
+            }
+            else
             {
                 result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
-
-                // Cache for 
-                cache.Add(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
             }
 
             return result;
