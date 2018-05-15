@@ -15,7 +15,7 @@ namespace WebApplication.Controllers
 {
     public class CourseController : Controller
     { 
-        private readonly bool isCaching = true;
+        private static readonly bool isCaching = true;
         private SchoolContext db = new SchoolContext();
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
