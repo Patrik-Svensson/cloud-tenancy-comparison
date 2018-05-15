@@ -19,7 +19,7 @@ namespace WebApplication.Controllers
         private readonly ICache _cache;
         private readonly ISettingsProvider _CatalogProvider;
         private readonly ITenantIdProvider _tenantId;
-        public static int[,] arr = new int[5000, 5000];
+        private static bool isCache = true;
 
         public CourseController(SchoolContext ctx, ICache cache, ITenantIdProvider tenantId, ISettingsProvider _catalogProvider)
         {
@@ -46,16 +46,26 @@ namespace WebApplication.Controllers
 
         private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
         {
-            string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
+            List<Course> result;
 
-            List<Course> result = (List<Course>)_cache.Get(cacheKey);
-            if (result == null)
+            if (isCache)
             {
-                result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
-                _cache.Set(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
+                string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
+
+                result = (List<Course>)_cache.Get(cacheKey);
+                if (result == null)
+                {
+                    result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
+                    _cache.Set(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
+                }
+
+                return result;
+                
             }
 
+            result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
             return result;
+
         }
 
         private List<Course> LoadCoursesFromDatabase(int? SelectedDepartment, int departmentID)
@@ -104,8 +114,11 @@ namespace WebApplication.Controllers
                     db.Courses.Add(course);
                     db.SaveChanges();
 
-                    // Bon Voyage Avec Le Cache!
-                    _cache.Invalidate();
+                    if (isCache)
+                    {
+                        // Bon Voyage Avec Le Cache!
+                        _cache.Invalidate();
+                    }   
                     
                     return RedirectToAction("Index", new { TenantId = tenantId });
                 }
@@ -154,7 +167,10 @@ namespace WebApplication.Controllers
                     db.SaveChanges();
 
                     // Bon Voyage Avec Le Cache!
-                    _cache.Invalidate();
+                    if (isCache)
+                    {
+                        _cache.Invalidate();
+                    }
 
                     return RedirectToAction("Index", new { TenantId = tenantId });
                 }
@@ -204,8 +220,10 @@ namespace WebApplication.Controllers
             db.SaveChanges();
 
             // Bon Voyage Avec Le Cache!
-            _cache.Invalidate();
-
+            if (isCache)
+            {
+                _cache.Invalidate();
+            }
             return RedirectToAction("Index", new { TenantId = tenantID });
         }
 

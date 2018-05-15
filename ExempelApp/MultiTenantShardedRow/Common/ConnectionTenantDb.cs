@@ -15,26 +15,29 @@ namespace Common
 
         private static readonly MemoryCache cache = new MemoryCache("ConnectionString");
         private static readonly MemoryCache cache_2 = new MemoryCache("Displayname");
+        private static bool isCache = false;
 
         public static string GetConnectionStringForTenant(string tenantId)
         {
             string connectionStringTenant = null;
             SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogSharded;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30");
-
-            string result = (string)cache.Get(tenantId);
-            if (result != null)
-                return result;
-
-
-
+            if (isCache)
+            {
+                string result = (string)cache.Get(tenantId);
+                if (result != null)
+                    return result;
+            }
+            
             try
             {
                 catalogDbConnection.Open();
                 SqlCommand command = new SqlCommand("SELECT Connection FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
                 connectionStringTenant = (string)command.ExecuteScalar();
-
-                if (connectionStringTenant != null)
-                    cache.Set(tenantId, connectionStringTenant, DateTimeOffset.Now.AddMinutes(1));
+                if (isCache)
+                {
+                    if (connectionStringTenant != null)
+                        cache.Set(tenantId, connectionStringTenant, DateTimeOffset.Now.AddMinutes(1));
+                }
 
             }
             catch (Exception e)
@@ -54,10 +57,11 @@ namespace Common
 
             string displayName = null;
             SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogSharded;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30");
-            string result = (string)cache_2.Get(tenantId);
-            if (result != null)
-                return result;
-
+            if (isCache) {
+                string result = (string)cache_2.Get(tenantId);
+                if (result != null)
+                    return result;
+            }
 
             try
             {
@@ -65,8 +69,11 @@ namespace Common
                 SqlCommand command = new SqlCommand("SELECT DisplayName FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
                 displayName = (string)command.ExecuteScalar();
 
-                if (displayName != null)
-                    cache_2.Set(tenantId, displayName, DateTimeOffset.Now.AddMinutes(1));
+                if (isCache)
+                {
+                    if (displayName != null)
+                        cache_2.Set(tenantId, displayName, DateTimeOffset.Now.AddMinutes(1));
+                }
             }
             catch (Exception e)
             {
