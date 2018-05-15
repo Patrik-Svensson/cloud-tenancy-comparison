@@ -372,6 +372,8 @@
     <Content Include="Scripts\esm\popper-utils.min.js.map" />
     <Content Include="Scripts\esm\popper-utils.js.map" />
     <Content Include="Connected Services\AzureAD\ConnectedService.json" />
+    <None Include="Properties\PublishProfiles\CrmExjobbSingle01 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\CrmExjobbSingle02 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
