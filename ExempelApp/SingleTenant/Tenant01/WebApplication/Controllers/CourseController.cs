@@ -20,9 +20,32 @@ namespace WebApplication.Controllers
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
         {
-            var departments = db.Departments.OrderBy(q => q.Name).ToList();
-            ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
-            int departmentID = SelectedDepartment.GetValueOrDefault();
+            string cacheKey = $"CourseController.Index({SelectedDepartment})";
+            var cache = MemoryCache.Default;
+            int departmentID;
+
+            if (isCaching)
+            {
+                var result = (List<Department>)cache.Get(cacheKey);
+                if (result == null)
+                {
+                    var departments = db.Departments.OrderBy(q => q.Name).ToList();
+                    ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+                    departmentID = SelectedDepartment.GetValueOrDefault();
+                    cache.Add(cacheKey, departments, DateTimeOffset.Now.AddMinutes(1));
+                }
+                else
+                {
+                    ViewBag.SelectedDepartment = new SelectList(result, "DepartmentID", "Name", SelectedDepartment);
+                    departmentID = SelectedDepartment.GetValueOrDefault();
+                }
+            }
+            else
+            {
+                var departments = db.Departments.OrderBy(q => q.Name).ToList();
+                ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+                departmentID = SelectedDepartment.GetValueOrDefault();
+            }
 
             IEnumerable<Course> courses = LoadCourses(SelectedDepartment, departmentID);
             return View(courses);

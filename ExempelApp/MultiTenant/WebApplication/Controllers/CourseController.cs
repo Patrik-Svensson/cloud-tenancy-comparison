@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using WebApplication.DAL;
 using WebApplication.Models;
 using System.Data.Entity.Infrastructure;
+using System.Runtime.Caching;
 
 namespace WebApplication.Controllers
 {
@@ -28,13 +29,46 @@ namespace WebApplication.Controllers
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
         {
-            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
+            string cacheKeyDep = $"CourseController.Index.Departments({SelectedDepartment})";
+            string cacheKeyDisplay = $"CourseController.Index.Display({SelectedDepartment})";
             int departmentID;
             IEnumerable<Course> courses;
 
-            var departments = db.Departments.OrderBy(q => q.Name).ToList();
-            ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
-            departmentID = SelectedDepartment.GetValueOrDefault();
+            if (isCaching)
+            {
+                string resultDisplay = (string)_cache.Get(cacheKeyDisplay);
+                if (resultDisplay == null)
+                {
+                    var displayName = _CatalogProvider.GetDisplayName();
+                    ViewBag.KUNDNAMN = displayName;
+                    _cache.Set(cacheKeyDisplay, displayName, DateTimeOffset.Now.AddMinutes(1));
+                }
+                else
+                {
+                    ViewBag.KUNDNAMN = resultDisplay;
+                }
+
+                var resultDep = (List<Department>)_cache.Get(cacheKeyDep);
+                if(resultDep == null)
+                {
+                    var departments = db.Departments.OrderBy(q => q.Name).ToList();
+                    ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+                    departmentID = SelectedDepartment.GetValueOrDefault();
+                    _cache.Set(cacheKeyDep, departments, DateTimeOffset.Now.AddMinutes(1));
+                }
+                else
+                {
+                    ViewBag.SelectedDepartment = new SelectList(resultDep, "DepartmentID", "Name", SelectedDepartment);
+                    departmentID = SelectedDepartment.GetValueOrDefault();
+                }
+            }
+            else
+            {
+                ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
+                var departments = db.Departments.OrderBy(q => q.Name).ToList();
+                ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+                departmentID = SelectedDepartment.GetValueOrDefault();
+            }
             courses = LoadCourses(SelectedDepartment, departmentID);
 
             return View(courses);
