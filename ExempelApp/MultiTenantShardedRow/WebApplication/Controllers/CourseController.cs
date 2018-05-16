@@ -19,7 +19,7 @@ namespace WebApplication.Controllers
         private readonly ICache _cache;
         private readonly ISettingsProvider _CatalogProvider;
         private readonly ITenantIdProvider _tenantId;
-        private static bool isCache = true;
+        private static bool isCaching = false;
 
         public CourseController(SchoolContext ctx, ICache cache, ITenantIdProvider tenantId, ISettingsProvider _catalogProvider)
         {
@@ -32,13 +32,46 @@ namespace WebApplication.Controllers
         // GET: Course
         public ActionResult Index(int? SelectedDepartment, int? tenantId)
         {
-            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             int departmentID;
             IEnumerable<Course> courses;
+            string cacheKeyDep = $"CourseController.Index.Departments({SelectedDepartment})";
+            string cacheKeyDisplay = $"CourseController.Index.Display({SelectedDepartment})";
 
-            var departments = db.Departments.OrderBy(q => q.Name).ToList();
-            ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
-            departmentID = SelectedDepartment.GetValueOrDefault();
+            if (isCaching)
+            {
+                string resultDisplay = (string)_cache.Get(cacheKeyDisplay);
+                if (resultDisplay == null)
+                {
+                    var displayName = _CatalogProvider.GetDisplayName();
+                    ViewBag.KUNDNAMN = displayName;
+                    _cache.Set(cacheKeyDisplay, displayName, DateTimeOffset.Now.AddMinutes(1));
+                }
+                else
+                {
+                    ViewBag.KUNDNAMN = resultDisplay;
+                }
+
+                var resultDep = (List<Department>)_cache.Get(cacheKeyDep);
+                if(resultDep == null)
+                {
+                    var departments = db.Departments.OrderBy(q => q.Name).ToList();
+                    ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+                    departmentID = SelectedDepartment.GetValueOrDefault();
+                    _cache.Set(cacheKeyDep, departments, DateTimeOffset.Now.AddMinutes(1));
+                }
+                else
+                {
+                    ViewBag.SelectedDepartment = new SelectList(resultDep, "DepartmentID", "Name", SelectedDepartment);
+                    departmentID = SelectedDepartment.GetValueOrDefault();
+                }
+            }
+            else
+            {
+                ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
+                var departments = db.Departments.OrderBy(q => q.Name).ToList();
+                ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+                departmentID = SelectedDepartment.GetValueOrDefault();
+            }
             courses = LoadCourses(SelectedDepartment, departmentID);
 
             return View(courses);
@@ -48,7 +81,7 @@ namespace WebApplication.Controllers
         {
             List<Course> result;
 
-            if (isCache)
+            if (isCaching)
             {
                 string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
 
@@ -114,7 +147,7 @@ namespace WebApplication.Controllers
                     db.Courses.Add(course);
                     db.SaveChanges();
 
-                    if (isCache)
+                    if (isCaching)
                     {
                         // Bon Voyage Avec Le Cache!
                         _cache.Invalidate();
@@ -167,7 +200,7 @@ namespace WebApplication.Controllers
                     db.SaveChanges();
 
                     // Bon Voyage Avec Le Cache!
-                    if (isCache)
+                    if (isCaching)
                     {
                         _cache.Invalidate();
                     }
@@ -220,7 +253,7 @@ namespace WebApplication.Controllers
             db.SaveChanges();
 
             // Bon Voyage Avec Le Cache!
-            if (isCache)
+            if (isCaching)
             {
                 _cache.Invalidate();
             }

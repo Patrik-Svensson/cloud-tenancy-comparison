@@ -15,13 +15,13 @@ namespace Common
 
         private static readonly MemoryCache cache = new MemoryCache("ConnectionString");
         private static readonly MemoryCache cache_2 = new MemoryCache("Displayname");
-        private static bool isCache = false;
+        private static bool isCaching = false;
 
         public static string GetConnectionStringForTenant(string tenantId)
         {
             string connectionStringTenant = null;
             SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogSharded;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30");
-            if (isCache)
+            if (isCaching)
             {
                 string result = (string)cache.Get(tenantId);
                 if (result != null)
@@ -33,7 +33,7 @@ namespace Common
                 catalogDbConnection.Open();
                 SqlCommand command = new SqlCommand("SELECT Connection FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
                 connectionStringTenant = (string)command.ExecuteScalar();
-                if (isCache)
+                if (isCaching)
                 {
                     if (connectionStringTenant != null)
                         cache.Set(tenantId, connectionStringTenant, DateTimeOffset.Now.AddMinutes(1));
@@ -57,7 +57,7 @@ namespace Common
 
             string displayName = null;
             SqlConnection catalogDbConnection = new SqlConnection("Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=CatalogSharded;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30");
-            if (isCache) {
+            if (isCaching) {
                 string result = (string)cache_2.Get(tenantId);
                 if (result != null)
                     return result;
@@ -69,7 +69,7 @@ namespace Common
                 SqlCommand command = new SqlCommand("SELECT DisplayName FROM TenantsMeta WHERE TenantID = " + tenantId.Trim() + ";", catalogDbConnection);
                 displayName = (string)command.ExecuteScalar();
 
-                if (isCache)
+                if (isCaching)
                 {
                     if (displayName != null)
                         cache_2.Set(tenantId, displayName, DateTimeOffset.Now.AddMinutes(1));
