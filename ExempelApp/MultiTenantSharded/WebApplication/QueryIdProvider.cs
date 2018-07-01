@@ -7,7 +7,7 @@ namespace WebApplication
 {
     public class QueryIdProvider : ITenantIdProvider
     {
-        private string _tenantId;
+        private static string _tenantId;
 
         public QueryIdProvider()
         {   
@@ -19,9 +19,12 @@ namespace WebApplication
 
             if(_tenantId == null)
             {
-                return "1";
+            
+                _tenantId = "1";
+                return _tenantId;
             }
-          
+
+
             return _tenantId;
         }
     }

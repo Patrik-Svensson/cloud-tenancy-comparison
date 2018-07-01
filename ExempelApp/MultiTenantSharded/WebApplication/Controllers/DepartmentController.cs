@@ -182,6 +182,7 @@ namespace WebApplication.Controllers
         // GET: Department/Delete/5
         public async Task<ActionResult> Delete(int? id, bool? concurrencyError, int? tenantId)
         {
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -214,6 +215,7 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(Department department, int? tenantId)
         {
+            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             try
             {
                 db.Entry(department).State = EntityState.Deleted;
@@ -231,7 +233,6 @@ namespace WebApplication.Controllers
                 return View(department);
             }
         }
-
 
         protected override void Dispose(bool disposing)
         {

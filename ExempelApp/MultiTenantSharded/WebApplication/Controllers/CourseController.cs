@@ -17,51 +17,94 @@ namespace WebApplication.Controllers
     {
         private readonly SchoolContext db;
         private readonly ICache _cache;
-        private readonly ITenantIdProvider _tenantProvider;
         private readonly ISettingsProvider _CatalogProvider;
+        private readonly ITenantIdProvider _tenantId;
+        private static bool isCaching = false;
 
         public CourseController(SchoolContext ctx, ICache cache, ITenantIdProvider tenantId, ISettingsProvider _catalogProvider)
         {
             db = ctx;
             _cache = cache;
-            this._tenantProvider = tenantId;
+            this._tenantId = tenantId;
             _CatalogProvider = _catalogProvider;
         }
 
         // GET: Course
         public ActionResult Index(int? SelectedDepartment, int? tenantId)
         {
-            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             int departmentID;
             IEnumerable<Course> courses;
-            int testA = Convert.ToInt32(_tenantProvider.TenantId());
-            var departments = db.Departments.Where(x => x.TenantID == testA).OrderBy(q => q.Name).ToList();
-            ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
-            departmentID = SelectedDepartment.GetValueOrDefault();
-            courses = LoadCourses(SelectedDepartment, departmentID, testA);
+            string cacheKeyDep = $"CourseController.Index.Departments({SelectedDepartment})";
+            string cacheKeyDisplay = $"CourseController.Index.Display({SelectedDepartment})";
+
+            if (isCaching)
+            {
+                string resultDisplay = (string)_cache.Get(cacheKeyDisplay);
+                if (resultDisplay == null)
+                {
+                    var displayName = _CatalogProvider.GetDisplayName();
+                    ViewBag.KUNDNAMN = displayName;
+                    _cache.Set(cacheKeyDisplay, displayName, DateTimeOffset.Now.AddMinutes(1));
+                }
+                else
+                {
+                    ViewBag.KUNDNAMN = resultDisplay;
+                }
+
+                var resultDep = (List<Department>)_cache.Get(cacheKeyDep);
+                if(resultDep == null)
+                {
+                    var departments = db.Departments.OrderBy(q => q.Name).ToList();
+                    ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+                    departmentID = SelectedDepartment.GetValueOrDefault();
+                    _cache.Set(cacheKeyDep, departments, DateTimeOffset.Now.AddMinutes(1));
+                }
+                else
+                {
+                    ViewBag.SelectedDepartment = new SelectList(resultDep, "DepartmentID", "Name", SelectedDepartment);
+                    departmentID = SelectedDepartment.GetValueOrDefault();
+                }
+            }
+            else
+            {
+                ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
+                var departments = db.Departments.OrderBy(q => q.Name).ToList();
+                ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
+                departmentID = SelectedDepartment.GetValueOrDefault();
+            }
+            courses = LoadCourses(SelectedDepartment, departmentID);
 
             return View(courses);
         }
 
-        private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID, int tenantID)
+        private IEnumerable<Course> LoadCourses(int? SelectedDepartment, int departmentID)
         {
-            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
-            string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
+            List<Course> result;
 
-            List<Course> result = (List<Course>)_cache.Get(cacheKey);
-            if (result == null)
+            if (isCaching)
             {
-                result = LoadCoursesFromDatabase(SelectedDepartment, departmentID, tenantID);
-                _cache.Set(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
+                string cacheKey = $"CourseController.LoadCourses({SelectedDepartment},{departmentID})";
+
+                result = (List<Course>)_cache.Get(cacheKey);
+                if (result == null)
+                {
+                    result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
+                    _cache.Set(cacheKey, result, DateTimeOffset.Now.AddMinutes(1));
+                }
+
+                return result;
+                
             }
 
+            result = LoadCoursesFromDatabase(SelectedDepartment, departmentID);
             return result;
+
         }
 
-        private List<Course> LoadCoursesFromDatabase(int? SelectedDepartment, int departmentID, int tenantID)
+        private List<Course> LoadCoursesFromDatabase(int? SelectedDepartment, int departmentID)
         {
             return db.Courses
-                .Where(c => (!SelectedDepartment.HasValue || c.DepartmentID == departmentID) && c.TenantID == tenantID)
+                .Where(c => !SelectedDepartment.HasValue || c.DepartmentID == departmentID)
                 .OrderBy(d => d.CourseID)
                 .Include(d => d.Department)
                 .ToList();
@@ -85,7 +128,7 @@ namespace WebApplication.Controllers
             return View(course);
         }
 
-        public ActionResult Create()
+        public ActionResult Create(int? tenantId)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             PopulateDepartmentsDropDownList();
@@ -94,7 +137,7 @@ namespace WebApplication.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")]Course course, int? tenantId)
+        public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID, TenantID")]Course course, int? tenantId)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             try
@@ -103,7 +146,14 @@ namespace WebApplication.Controllers
                 {
                     db.Courses.Add(course);
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+
+                    if (isCaching)
+                    {
+                        // Bon Voyage Avec Le Cache!
+                        _cache.Invalidate();
+                    }   
+                    
+                    return RedirectToAction("Index", new { TenantId = tenantId });
                 }
             }
             catch (RetryLimitExceededException /* dex */)
@@ -122,7 +172,7 @@ namespace WebApplication.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            
+            //TODO FIXA KONTROLL
             Course course = db.Courses.Find(id);
             if (course == null)
             {
@@ -149,7 +199,13 @@ namespace WebApplication.Controllers
                 {
                     db.SaveChanges();
 
-                    return RedirectToAction("Index");
+                    // Bon Voyage Avec Le Cache!
+                    if (isCaching)
+                    {
+                        _cache.Invalidate();
+                    }
+
+                    return RedirectToAction("Index", new { TenantId = tenantId });
                 }
                 catch (RetryLimitExceededException /* dex */)
                 {
@@ -171,7 +227,7 @@ namespace WebApplication.Controllers
 
 
         // GET: Course/Delete/5
-        public ActionResult Delete(int? id, int? tenantId)
+        public ActionResult Delete(int? id, int? tenantID)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (id == null)
@@ -189,23 +245,29 @@ namespace WebApplication.Controllers
         // POST: Course/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id, int? tenantId)
+        public ActionResult DeleteConfirmed(int id, int? tenantID)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             Course course = db.Courses.Find(id);
             db.Courses.Remove(course);
             db.SaveChanges();
-            return RedirectToAction("Index");
+
+            // Bon Voyage Avec Le Cache!
+            if (isCaching)
+            {
+                _cache.Invalidate();
+            }
+            return RedirectToAction("Index", new { TenantId = tenantID });
         }
 
-        public ActionResult UpdateCourseCredits(int? tenantId)
+        public ActionResult UpdateCourseCredits()
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             return View();
         }
 
         [HttpPost]
-        public ActionResult UpdateCourseCredits(int? multiplier, int? tenantId)
+        public ActionResult UpdateCourseCredits(int? multiplier, int? tenantID)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             if (multiplier != null)

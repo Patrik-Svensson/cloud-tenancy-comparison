@@ -72,7 +72,6 @@ namespace WebApplication.Controllers
             return View(students.ToPagedList(pageNumber, pageSize));
         }
 
-
         // GET: Student/Details/5
         public ActionResult Details(int? id, int? tenantId)
         {
@@ -120,7 +119,6 @@ namespace WebApplication.Controllers
             }
             return View(student);
         }
-
 
         // GET: Student/Edit/5
         public ActionResult Edit(int? id, int? tenantId)

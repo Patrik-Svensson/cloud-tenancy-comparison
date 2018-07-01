@@ -4,11 +4,15 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Web;
 using System.Diagnostics;
 using System;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace WebApplication.DAL
 {
     public class SchoolContext : DbContext
     {
+        private readonly ITenantIdProvider _tenantIdProvider;
+
         [Obsolete("Do not call this, it is used for Add-Migration support")]
         public SchoolContext()
             : this(GetConnectionString())
@@ -16,17 +20,31 @@ namespace WebApplication.DAL
 
         public SchoolContext(string connectionString)
             : base(connectionString)
-        {
-
-        }
-        
-        public SchoolContext(ISettingsProvider settingsProvider)
-            : this((settingsProvider.GetConnectionString()))
         { }
+        
+        public SchoolContext(ISettingsProvider settingsProvider, ITenantIdProvider tenantIdProvider)
+        : this((settingsProvider.GetConnectionString()))
+        {
+            this._tenantIdProvider = tenantIdProvider;
+            Database.Connection.StateChange += OnConnectionOpened;
+            
+        }
+
+        private void OnConnectionOpened(object sender, StateChangeEventArgs e)
+        {
+            if (e.CurrentState == ConnectionState.Open)
+            {
+                string id = _tenantIdProvider.TenantId();
+                var cmd = (sender as SqlConnection).CreateCommand();
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.CommandText = "exec sp_set_session_context 'TenantID', N'" + id + "'";
+                cmd.ExecuteNonQuery();
+            }
+        }
 
         private static string GetConnectionString()
         {
-            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbMulti01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            return "Server=tcp:exjobb-exempelapp.database.windows.net,1433;Initial Catalog=ExjobbSharded01;Persist Security Info=False;User ID=Guest_CRM;Password=TreasuryGast!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
 
         public DbSet<Course> Courses { get; set; }

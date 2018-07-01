@@ -15,7 +15,7 @@ namespace WebApplication.Controllers
         private readonly ISettingsProvider _CatalogProvider;
         private QueryIdProvider provider = new QueryIdProvider();
 
-        public HomeController(SchoolContext db, ITenantIdProvider idProvider,ISettingsProvider _catalogProvider)
+        public HomeController(SchoolContext db, ITenantIdProvider idProvider, ISettingsProvider _catalogProvider)
         {
             this.db = db;
             this._idProvider = idProvider;
@@ -29,7 +29,7 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult About(int? tenantId)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             // Commenting out LINQ to show how to do the same thing in SQL.
@@ -50,7 +50,8 @@ namespace WebApplication.Controllers
 
             return View(data.ToList());
         }
-        public ActionResult Contact()
+
+        public ActionResult Contact(int? tenantId)
         {
             ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             ViewBag.Message = "Your contact page.";
@@ -60,8 +61,10 @@ namespace WebApplication.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            if(db != null)
+            if (db != null)
+            {
                 db.Dispose();
+            }
             base.Dispose(disposing);
         }
     }

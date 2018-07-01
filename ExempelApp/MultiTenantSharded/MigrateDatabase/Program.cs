@@ -33,10 +33,9 @@ namespace MigrateDatabase
 
             Functions.Migrate(tenant);
 
-
             // The following code ensures that the WebJob will be running continuously
             // host.Call(typeof(Functions).GetMethod(nameof(Functions.Migrate)));
-            
+
             return 0;
         }
     }

@@ -80,9 +80,8 @@ namespace WebApplication.Controllers
             return View(instructor);
         }
 
-        public ActionResult Create(int? tenantId)
+        public ActionResult Create()
         {
-            ViewBag.KUNDNAMN = _CatalogProvider.GetDisplayName();
             var instructor = new Instructor();
             instructor.Courses = new List<Course>();
             PopulateAssignedCourseData(instructor);

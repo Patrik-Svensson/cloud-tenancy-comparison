@@ -6,9 +6,10 @@
 
 <h2>Courses</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create", new { tenantId = Context.Request.QueryString["tenantId"] })
-</p>
+
+    <p>
+        @Html.ActionLink("Create New", "Create", new { TenantId = Context.Request.QueryString["TenantId"] })
+    </p>
 
 @using (Html.BeginForm())
 {
@@ -51,9 +52,9 @@
                 @Html.DisplayFor(modelItem => item.Department.Name)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.CourseID, tenantId = Context.Request.QueryString["tenantId"] }) |
-                @Html.ActionLink("Details", "Details", new { id = item.CourseID, tenantId = Context.Request.QueryString["tenantId"] }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.CourseID, tenantId = Context.Request.QueryString["tenantId"] })
+                @Html.ActionLink("Edit", "Edit", new { id = item.CourseID, tenantId = Context.Request.QueryString["TenantId"] }) |
+                @Html.ActionLink("Details", "Details", new { id = item.CourseID, tenantId = Context.Request.QueryString["TenantId"] }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.CourseID, tenantId = Context.Request.QueryString["TenantId"] })
             </td>
         </tr>
     }
